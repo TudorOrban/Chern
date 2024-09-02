@@ -11,9 +11,8 @@ export function registerRoutes(router: Router): void {
 export function registerUserRoutes(router: Router): void {
     const userController = container.get<UserController>(TYPES.UserController);
     
-    console.log("Registering user routes");
-    
     router.get("/users/:id", userController.getUserById);
+    router.get("/users/email/:email", userController.getUserByEmail);
     router.post("/users", userController.signUp);
     router.put("/users", userController.updateUser);
     router.delete("/users/:id", userController.deleteUser);

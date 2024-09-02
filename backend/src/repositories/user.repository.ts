@@ -3,7 +3,8 @@ import { IUser, User } from "../models/user.model";
 import { CreateUserDTO, UpdateUserDTO } from "../DTOs/user.dto";
 
 export interface UserRepository {
-    getUserById(id: number): Promise<IUser | null>;
+    findUserById(id: number): Promise<IUser | null>;
+    findUserByEmail(email: string): Promise<IUser | null>;
     signUp(userDTO: CreateUserDTO): Promise<IUser>;
     updateUser(userDTO: UpdateUserDTO): Promise<IUser | null>;
     deleteUser(id: number): Promise<IUser | null>;
@@ -12,8 +13,12 @@ export interface UserRepository {
 @injectable()
 export class UserRepositoryImpl implements UserRepository {
 
-    async getUserById(id: number): Promise<IUser | null> {
+    async findUserById(id: number): Promise<IUser | null> {
         return User.findById(id).exec();
+    }
+
+    async findUserByEmail(email: string): Promise<IUser | null> {
+        return User.findOne({ email }).exec();
     }
 
     async signUp(userDTO: CreateUserDTO): Promise<IUser> {

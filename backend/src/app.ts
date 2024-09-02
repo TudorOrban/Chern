@@ -3,7 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import { registerRoutes } from "./routes/all.routes";
 
-// MongoDB connection
+// Connect to MongoDB
 const mongoUri = process.env.MONGO_URI ?? "mongodb://localhost:27017/chern";
 
 mongoose.connect(mongoUri, {})
@@ -14,18 +14,19 @@ mongoose.connect(mongoUri, {})
     console.error("Failed to connect to MongoDB: ", err);
 });
 
-// Express app
+// Create Express app
 const app = express();
 
 app.use(express.json());
 
-// Controllers
+// Register routes
 const router = express.Router();
 
 registerRoutes(router);
 
 app.use("/api/v1", router);
 
+// Set up error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
 

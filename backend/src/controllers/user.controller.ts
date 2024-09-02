@@ -8,15 +8,28 @@ export class UserController {
     
     constructor(
         @inject(TYPES.UserService) private userService: UserService
-    ) {
-        console.log("UserController created with userService: ", userService);
-    }
+    ) {}
 
-    public async getUserById(req: Request, res: Response, next: NextFunction): Promise<void>  {
+    getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = parseInt(req.params.id);
 
             const user = await this.userService.getUserById(id);
+            if (!user) {
+                res.status(404).send("User not found");
+            }
+
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    getUserByEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const email = req.params.email;
+
+            const user = await this.userService.getUserByEmail(email);
             if (!user) {
                 res.status(404).send("User not found");
             }
@@ -36,7 +49,7 @@ export class UserController {
         }
     }
 
-    public async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const user = await this.userService.updateUser(req.body);
             if (!user) {
@@ -49,7 +62,7 @@ export class UserController {
         }
     }
 
-    public async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = parseInt(req.params.id);
 
