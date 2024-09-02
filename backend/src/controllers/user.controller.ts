@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { UserService } from "../services/user.service";
-import { Request, Response } from "express";
 import TYPES from "../config/types";
+import { Request, Response, NextFunction } from 'express';
 
 @injectable()
 export class UserController {
@@ -9,7 +9,7 @@ export class UserController {
         @inject(TYPES.UserService) private userService: UserService
     ) {}
 
-    public async getUserById(req: Request, res: Response): Promise<Response>  {
+    public async getUserById(req: Request, res: Response, next: NextFunction): Promise<void>  {
         try {
             const id = parseInt(req.params.id);
 
@@ -18,9 +18,46 @@ export class UserController {
                 res.status(404).send("User not found");
             }
 
-            return res.json(user);
+            res.json(user);
         } catch (error) {
-            return res.status(500).send();
+            next(error);
+        }
+    }
+
+    public async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const user = await this.userService.signUp(req.body);
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const user = await this.userService.updateUser(req.body);
+            if (!user) {
+                res.status(404).send("User not found");
+            }
+
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = parseInt(req.params.id);
+
+            const user = await this.userService.deleteUser(id);
+            if (!user) {
+                res.status(404).send("User not found");
+            }
+
+            res.json(user);
+        } catch (error) {
+            next(error);
         }
     }
 }

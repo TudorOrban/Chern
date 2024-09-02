@@ -1,9 +1,7 @@
-import express from "express";
-import mongoose from "mongoose";
 import "reflect-metadata";
-import container from "./config/inversify.config";
-import { UserController } from "./controllers/user.controller";
-import TYPES from "./config/types";
+import express, { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
+import { registerRoutes } from "./routes/all.routes";
 
 // MongoDB connection
 const mongoUri = process.env.MONGO_URI ?? "mongodb://localhost:27017/chern";
@@ -22,10 +20,26 @@ const app = express();
 app.use(express.json());
 
 // Controllers
-const userController = container.get<UserController>(TYPES.UserController);
+const router = express.Router();
 
-app.get("/users/:id", userController.getUserById);
+registerRoutes(router);
 
+app.use("/api/v1", router);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error(err);
+
+    if (process.env.NODE_ENV !== 'production') {
+        res.status(err.status || 500).json({
+            error: err.message,
+            stack: err.stack
+        });
+    } else {
+        res.status(err.status || 500).json({
+            error: "Internal server error"
+        });
+    }
+});
 
 // Start the server
 const PORT = process.env.PORT ?? 3000;
