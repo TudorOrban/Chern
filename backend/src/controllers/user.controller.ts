@@ -5,9 +5,12 @@ import { Request, Response, NextFunction } from 'express';
 
 @injectable()
 export class UserController {
+    
     constructor(
         @inject(TYPES.UserService) private userService: UserService
-    ) {}
+    ) {
+        console.log("UserController created with userService: ", userService);
+    }
 
     public async getUserById(req: Request, res: Response, next: NextFunction): Promise<void>  {
         try {
@@ -24,7 +27,7 @@ export class UserController {
         }
     }
 
-    public async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const user = await this.userService.signUp(req.body);
             res.json(user);

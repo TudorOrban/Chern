@@ -5,7 +5,7 @@ import TYPES from "./types";
 import { UserController } from "../controllers/user.controller";
 
 
-const container = new Container();
+const container = new Container({ defaultScope: "Singleton" });
 container.bind<UserRepository>(TYPES.UserRepository).to(UserRepositoryImpl);
 console.log("Binding UserRepository to UserRepositoryImpl");
 container.bind<UserService>(TYPES.UserService).to(UserServiceImpl);
