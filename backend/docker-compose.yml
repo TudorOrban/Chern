@@ -1,11 +1,11 @@
 version: '3.8'
 services:
   app:
-    image: tudoraorban/chern
+    image: tudoraorban/chern:latest
     ports:
       - "3000:3000"
     environment:
-      - MONGO_URI=mongodb://mong:27017/chern
+      - MONGO_URI=mongodb://mongo:27017/chern
     depends_on:
       - mongo
     volumes:
@@ -13,11 +13,14 @@ services:
       - /usr/src/app/node_modules
 
   mongo:
-    image: mongo
+    image: mongo:4.4
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
 
 volumes:
   mongo-data:
