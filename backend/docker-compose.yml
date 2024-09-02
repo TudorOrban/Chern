@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  app:
+    image: tudoraorban/chern
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mong:27017/chern
+    depends_on:
+      - mongo
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
