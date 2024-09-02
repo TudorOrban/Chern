@@ -1,5 +1,10 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div class="flex items-center justify-between">
+    <div>This is a Tailwind Test page</div>
+
+    <div>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
   </div>
 </template>
