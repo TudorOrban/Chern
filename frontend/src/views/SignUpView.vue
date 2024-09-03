@@ -24,8 +24,8 @@
             <div class="flex items-center justify-between w-full p-8">
                 <button type="submit" class="form-button">Sign Up</button>
 
-                <router-link to="/sign-up" class="form-link">
-                    Sign Up
+                <router-link to="/login" class="form-link">
+                    Login
                 </router-link>
             </div>
 
@@ -92,9 +92,12 @@ export default class SignUpView extends Vue {
         }
 
         try {
-            const response = await this.authService.signUp(this.email, this.password, this.username);
-            console.log("Sign Up successful: ", response);
-            localStorage.setItem('userToken', response.token);
+            await this.$store.dispatch('signUp', {
+                email: this.email,
+                password: this.password,
+                username: this.username
+            });
+            this.$router.push('/');
         } catch (error) {
             this.areCredentialsInvalid = true;
             console.error("Sign Up failed: ", error);

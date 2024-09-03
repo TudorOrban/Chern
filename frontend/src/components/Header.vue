@@ -12,24 +12,31 @@
 
         <div class="flex items-center space-x-2">
             <router-link
-                v-if="!isLoggedIn" 
+                v-if="!isAuthenticated" 
                 to="/login"
             >
                 Login
             </router-link>
 
             <router-link
-                v-if="!isLoggedIn"
+                v-if="!isAuthenticated"
                 to="/sign-up"
             >
                 Sign Up
             </router-link>
 
             <button
-                v-if="isLoggedIn"  
+                v-if="isAuthenticated"  
                 @click="logout"
             >
                 Logout
+            </button>
+
+            <button 
+                v-if="isAuthenticated"
+                class="w-10 h-10 bg-purple-700 rounded-full border border-gray-300 shadow-sm font-semibold text-white"
+            >
+                TO
             </button>
 
         </div>
@@ -39,21 +46,19 @@
 
 <script lang="ts">
 import AuthService from '@/services/AuthService';
-import { Vue } from 'vue-class-component';
+import { Options, Vue } from 'vue-class-component';
+import { mapGetters } from 'vuex';
 
-export default class HeaderComponent extends Vue {
-    authService!: AuthService;
-
-    isLoggedIn = false;
-    
-    created() {
-        this.authService = new AuthService();
+@Options({
+    computed: {
+        ...mapGetters(['isAuthenticated'])
     }
-
+})
+export default class HeaderComponent extends Vue {
     async logout() {
         try {
-            localStorage.removeItem('userToken');
-            this.isLoggedIn = false;
+            await this.$store.dispatch('logout');
+            this.$router.replace('/login');
         } catch (error) {
             console.error("Logout failed: ", error);
         }

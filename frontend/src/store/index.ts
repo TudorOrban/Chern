@@ -37,6 +37,16 @@ export default createStore({
                 throw new Error('Authentication failed');
             }
         },
+        async signUp({ commit }, { email, password, username }) {
+            try {
+                const response = await authService.signUp(email, password, username);
+                commit("setToken", response.token);
+                await this.dispatch('fetchUser');
+            } catch (error) {
+                console.error(error);
+                throw new Error('Failed to sign up');
+            }
+        },
         async fetchUser({ commit, state }) {
             try {
                 console.log(state.token);
