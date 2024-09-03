@@ -9,7 +9,7 @@ export interface UserService {
     getUserById(id: number): Promise<UserDetailsDTO | null>;
     getUserByEmail(email: string): Promise<UserDetailsDTO | null>;
     validateCredentials(email: string, password: string): Promise<IUser | null>;
-    signUp(userDTO: CreateUserDTO): Promise<UserDetailsDTO>;
+    signUp(userDTO: CreateUserDTO): Promise<IUser>;
     updateUser(userDTO: UpdateUserDTO): Promise<UserDetailsDTO | null>;
     deleteUser(id: number): Promise<UserDetailsDTO | null>;
 }
@@ -55,7 +55,7 @@ export class UserServiceImpl implements UserService {
         return user;
     }
 
-    signUp = async (userDTO: CreateUserDTO): Promise<UserDetailsDTO> => {
+    signUp = async (userDTO: CreateUserDTO): Promise<IUser> => {
         const saltRounds = 10;
         try {
             // Hash password
@@ -69,7 +69,7 @@ export class UserServiceImpl implements UserService {
 
             const user = await this.userRepository.signUp(newUserDTO);
 
-            return this.mapUserToUserDetails(user);
+            return user;
         } catch (error) {
             throw new Error('Error signing up user: ' + error);
         }

@@ -67,7 +67,13 @@ export class UserController {
     signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const user = await this.userService.signUp(req.body);
-            res.json(user);
+            const tokenPayload = {
+                id: user._id?.toString(),
+                email: user.email
+            }
+
+            const token = this.jwtService.generateToken(tokenPayload, "1h");
+            res.json({ token });
         } catch (error) {
             next(error);
         }
