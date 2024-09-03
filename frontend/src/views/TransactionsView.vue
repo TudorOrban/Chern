@@ -9,6 +9,25 @@
                 Create
             </button>
         </div>
+        
+        <table class="w-full mt-4">
+            <thead>
+                <tr class="bg-gray-100 text-left">
+                    <th class="px-4 py-2">Date</th>
+                    <th class="px-4 py-2">Type</th>
+                    <th class="px-4 py-2">Amount</th>
+                    <th class="px-4 py-2">Recurrent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="transaction in transactions" :key="transaction.id" class="border-b">
+                    <td class="px-4 py-2">{{ transaction?.date | formatDate }}</td>
+                    <td class="px-4 py-2">{{ transaction?.type }}</td>
+                    <td class="px-4 py-2">{{ transaction.amount | currency }}</td>
+                    <td class="px-4 py-2">{{ transaction?.isRecurrent ? 'Yes' : 'No' }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </template>
 
@@ -21,7 +40,9 @@ export default class TransactionsView extends Vue {
     
     created() {
         if (this.isAuthenticated && this.user) {
-            this.$store.dispatch('fetchUserTransactions');
+            this.$store.dispatch('fetchUserTransactions').then(() => {
+                this.$forceUpdate();
+            });
         }
     }
 
@@ -34,10 +55,8 @@ export default class TransactionsView extends Vue {
     }
 
     get transactions(): TransactionDetailsDTO[] {
-        return this.$store.getters.transactions;
+        return this.$store.getters.userTransactions;
     }
-
-
 }
 
 </script>

@@ -85,7 +85,6 @@ export default createStore<State>({
                 }
                 const transactions = await transactionService.getTransactionsByUser(state.user.id);
                 commit("setUserTransactions", transactions);
-                console.log("Transactions: ", state.userTransactions);
             } catch (error) {
                 console.error(error);
                 throw new Error('Failed to fetch user transactions');

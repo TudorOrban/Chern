@@ -11,7 +11,7 @@ export default class TransactionService {
 
     async getTransactionsByUser(userId: string): Promise<TransactionDetailsDTO[]> {
         const response = await API.get(`${API_URL}/transactions/user/${userId}`);
-
+        console.log("Response", response.data);
         return response.data;
     }
 
