@@ -1,24 +1,30 @@
+import { TransactionDetailsDTO } from "@/DTOs/transaction.dto";
 import { User } from "@/models/user.model";
-import AuthService from "@/services/AuthService";
-import UserService from "@/services/UserService";
+import AuthService from "@/services/auth.service";
+import TransactionService from "@/services/transaction.service";
+import UserService from "@/services/user.service";
 import { createStore } from "vuex";
 
 const authService = new AuthService();
 const userService = new UserService();
+const transactionService = new TransactionService();
 
 interface State {
     user: User | null;
     token: string | null;
+    userTransactions: TransactionDetailsDTO[] | null;
 }
 
 export default createStore<State>({
     state: {
         user: null,
         token: localStorage.getItem("userToken") ?? "",
+        userTransactions: null,
     },
     getters: {
         isAuthenticated: (state: State): boolean => !!state.token,
         user: (state: State): User | null => state.user,
+        userTransactions: (state: State): TransactionDetailsDTO[] | null => state.userTransactions,
     },
     mutations: {
         setToken(state, token) {
@@ -32,6 +38,9 @@ export default createStore<State>({
             state.token = "";
             state.user = null;
             localStorage.removeItem("userToken");
+        },
+        setUserTransactions(state, transactions) {
+            state.userTransactions = transactions;
         }
     },
     actions: {
@@ -62,10 +71,22 @@ export default createStore<State>({
                 }
                 const user = await userService.getUserByToken(state.token);
                 commit("setUser", user);
-                console.log(state.user);
             } catch (error) {
                 console.error(error);
                 throw new Error('Failed to fetch user');
+            }
+        },
+        async fetchUserTransactions({ commit, state }) {
+            try {
+                if (!state.user) {
+                    throw new Error('No user found');
+                }
+                const transactions = await transactionService.getTransactionsByUser(state.user.id);
+                commit("setUserTransactions", transactions);
+                console.log("Transactions: ", state.userTransactions);
+            } catch (error) {
+                console.error(error);
+                throw new Error('Failed to fetch user transactions');
             }
         },
         logout({ commit }) {

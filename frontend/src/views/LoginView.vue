@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import AuthService from '@/services/AuthService';
+import AuthService from '@/services/auth.service';
 import { Vue } from 'vue-class-component';
 
 export default class LoginView extends Vue {

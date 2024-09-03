@@ -4,7 +4,7 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import './styles/globals.css'
-import AuthService from './services/AuthService'
+import AuthService from './services/auth.service'
 
 const app = createApp(App);
 
