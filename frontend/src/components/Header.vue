@@ -8,6 +8,7 @@
         <nav>
             <router-link to="/">Home</router-link> |
             <router-link to="/dashboard">Dashboard</router-link>
+            <router-link to="/transactions">Transactions</router-link>
         </nav>
 
         <div class="flex items-center space-x-2">
@@ -51,13 +52,16 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { User } from '@/models/user.model';
+import { StandardError } from '@/exceptions/error';
 
 @Options({})
 export default class HeaderComponent extends Vue {
 
     created() {
         if (this.isAuthenticated || localStorage.getItem('userToken')) {
-            this.$store.dispatch('fetchUser');
+            this.$store.dispatch('fetchUser').catch((error: StandardError) => {
+                console.error("Failed to fetch user: ", error);
+            });
         }
     }
 

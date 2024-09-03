@@ -1,0 +1,16 @@
+.page-standard-horizontal-padding {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+@media (min-width: 768px) {
+    .page-standard-horizontal-padding {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}

@@ -1,4 +1,32 @@
+.standard-button {
+    padding: 10px 20px;
+    color: #0d0d0d;
+    background-color: #fdfdfd;
+    border: 1px solid #b4b4b4;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600;
 
+    &:hover {
+        background-color: #ebebeb;
+    }
+}
+
+.standard-write-button {
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #0056b3;
+    border: 1px solid #b4b4b4;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600;
+
+    &:hover {
+        background-color: #003d82;
+    }
+}
 
 .auth-button {
     padding: 5px 10px;

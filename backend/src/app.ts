@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import { registerRoutes } from "./routes/all.routes";
 import cors from "cors";
+import { StandardError } from "./exceptions/error";
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGO_URI ?? "mongodb://localhost:27017/chern";
@@ -37,10 +38,13 @@ app.use("/api/v1", router);
 // Set up error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
-    res.status(err.status || 500).json({
-        error: err.message,
+    const error: StandardError = {
+        name: err?.name,
+        message: err?.message,
+        statusCode: err?.status ?? 500, 
         stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
+    };
+    res.status(error.statusCode).json(error);
 });
 
 // Start the server

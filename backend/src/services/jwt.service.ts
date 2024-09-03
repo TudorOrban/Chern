@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import jwt from 'jsonwebtoken';
+import { StandardError } from "../exceptions/error";
 
 export interface JWTService {
     generateToken(payload: object, expiresIn: string | number): string;
@@ -22,7 +23,8 @@ export class JWTServiceImpl implements JWTService {
         try {
             return jwt.verify(token, this.secretKey);
         } catch (error) {
-            throw new Error('Error verifying token: ' + error);
+            const err = new StandardError("Unauthorized", "Error validating JWT token", 401);
+            throw err;
         }
     }
     

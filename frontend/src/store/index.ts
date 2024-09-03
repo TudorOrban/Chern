@@ -73,7 +73,8 @@ export default createStore<State>({
                 commit("setUser", user);
             } catch (error) {
                 console.error(error);
-                throw new Error('Failed to fetch user');
+                commit("clearAuth");
+                throw error;
             }
         },
         async fetchUserTransactions({ commit, state }) {
