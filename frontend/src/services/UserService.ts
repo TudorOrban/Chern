@@ -8,4 +8,10 @@ export default class UserService {
 
         return response.data;
     }
+
+    async getUserByToken(token: string): Promise<UserDetailsDTO> {
+        const response = await API.get(`${API_URL}/users/token/${token}`);
+
+        return response.data;
+    }
 }

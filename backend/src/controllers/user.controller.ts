@@ -14,7 +14,7 @@ export class UserController {
 
     getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = parseInt(req.params.id);
+            const id = req.params.id;
 
             const user = await this.userService.getUserById(id);
             if (!user) {
@@ -36,6 +36,23 @@ export class UserController {
                 res.status(404).send("User not found");
             }
 
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    getUserByToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const token = req.params.token;
+
+            const userId = this.jwtService.getUserIdFromToken(token);
+
+            const user = await this.userService.getUserById(userId);
+            if (!user) {
+                res.status(404).send("User not found");
+            }
+            
             res.json(user);
         } catch (error) {
             next(error);
@@ -94,7 +111,7 @@ export class UserController {
 
     deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const id = parseInt(req.params.id);
+            const id = req.params.id;
 
             const user = await this.userService.deleteUser(id);
             if (!user) {

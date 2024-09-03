@@ -18,7 +18,7 @@ export const authorize = () => {
         }
         
         // Check access based on ID or Email
-        if (requestedUserId && userId && !securityService.canAccessResource(userId, requestedUserId)) {
+        if (requestedUserId && userId && !securityService.canAccessResource(requestedUserId, userId)) {
             return res.status(401).send("Access denied");
         }
 

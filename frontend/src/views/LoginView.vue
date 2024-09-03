@@ -81,6 +81,7 @@ export default class LoginView extends Vue {
                 email: this.email,
                 password: this.password
             });
+            this.$store.dispatch('fetchUser');
             this.$router.push('/');
         } catch (error) {
             this.areCredentialsInvalid = true;

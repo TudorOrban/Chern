@@ -34,9 +34,9 @@
 
             <button 
                 v-if="isAuthenticated"
-                class="w-10 h-10 bg-purple-700 rounded-full border border-gray-300 shadow-sm font-semibold text-white"
+                class="flex items-center justify-center w-10 h-10 bg-purple-700 rounded-full border border-gray-300 shadow-sm font-semibold text-white"
             >
-                TO
+                {{ userInitials }}
             </button>
 
         </div>
@@ -45,16 +45,29 @@
 </template>
 
 <script lang="ts">
-import AuthService from '@/services/AuthService';
 import { Options, Vue } from 'vue-class-component';
-import { mapGetters } from 'vuex';
+import { User } from '@/models/user.model';
 
-@Options({
-    computed: {
-        ...mapGetters(['isAuthenticated'])
-    }
-})
+@Options({})
 export default class HeaderComponent extends Vue {
+
+    get isAuthenticated(): boolean {
+        return !!this.$store.getters.isAuthenticated;
+    }
+
+    get user(): User | null {
+        return this.$store.getters.user;
+    }
+
+    get userInitials(): string {
+        if (this.user && this.user.username) {
+            return this.user.username
+                .replace(/[^A-Z]/g, "")
+                .slice(0, 2); 
+        }
+        return '';
+    }
+
     async logout() {
         try {
             await this.$store.dispatch('logout');

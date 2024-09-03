@@ -20,6 +20,7 @@ export function registerUserRoutes(router: Router): void {
     // Protected routes
     router.get("/users/:id", authenticateJWT, authorize(), userController.getUserById);
     router.get("/users/email/:email", authenticateJWT, authorize(), userController.getUserByEmail);
+    router.get("/users/token/:token", userController.getUserByToken);
     router.put("/users", authenticateJWT, authorize(), userController.updateUser);
     router.delete("/users/:id", authenticateJWT, authorize(), userController.deleteUser);
 }

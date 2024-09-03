@@ -6,12 +6,12 @@ import { CreateUserDTO, UpdateUserDTO, UserDetailsDTO } from "../DTOs/user.dto";
 import bcrypt from 'bcrypt';
 
 export interface UserService {
-    getUserById(id: number): Promise<UserDetailsDTO | null>;
+    getUserById(id: string): Promise<UserDetailsDTO | null>;
     getUserByEmail(email: string): Promise<UserDetailsDTO | null>;
     validateCredentials(email: string, password: string): Promise<IUser | null>;
     signUp(userDTO: CreateUserDTO): Promise<IUser>;
     updateUser(userDTO: UpdateUserDTO): Promise<UserDetailsDTO | null>;
-    deleteUser(id: number): Promise<UserDetailsDTO | null>;
+    deleteUser(id: string): Promise<UserDetailsDTO | null>;
 }
 
 @injectable()
@@ -21,7 +21,7 @@ export class UserServiceImpl implements UserService {
         @inject(TYPES.UserRepository) private userRepository: UserRepository
     ) {}
 
-    getUserById = async (id: number): Promise<UserDetailsDTO | null> => {
+    getUserById = async (id: string): Promise<UserDetailsDTO | null> => {
         return this.userRepository.findUserById(id)
             .then((user: IUser | null) => {
                 if (!user) {
@@ -85,7 +85,7 @@ export class UserServiceImpl implements UserService {
             });
     }
 
-    deleteUser = async (id: number): Promise<UserDetailsDTO | null> => {
+    deleteUser = async (id: string): Promise<UserDetailsDTO | null> => {
         return this.userRepository.deleteUser(id)
             .then((user: IUser | null) => {
                 if (!user) {

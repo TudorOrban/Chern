@@ -1,16 +1,24 @@
+import { User } from "@/models/user.model";
 import AuthService from "@/services/AuthService";
+import UserService from "@/services/UserService";
 import { createStore } from "vuex";
 
 const authService = new AuthService();
+const userService = new UserService();
 
-export default createStore({
+interface State {
+    user: User | null;
+    token: string | null;
+}
+
+export default createStore<State>({
     state: {
         user: null,
         token: localStorage.getItem("userToken") ?? "",
     },
     getters: {
-        isAuthenticated: (state) => !!state.token,
-        user: (state) => state.user,
+        isAuthenticated: (state: State): boolean => !!state.token,
+        user: (state: State): User | null => state.user,
     },
     mutations: {
         setToken(state, token) {
@@ -49,7 +57,12 @@ export default createStore({
         },
         async fetchUser({ commit, state }) {
             try {
-                console.log(state.token);
+                if (!state.token) {
+                    throw new Error('No token found');
+                }
+                const user = await userService.getUserByToken(state.token);
+                commit("setUser", user);
+                console.log(state.user);
             } catch (error) {
                 console.error(error);
                 throw new Error('Failed to fetch user');

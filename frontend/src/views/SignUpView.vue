@@ -97,6 +97,7 @@ export default class SignUpView extends Vue {
                 password: this.password,
                 username: this.username
             });
+            this.$store.dispatch('fetchUser');
             this.$router.push('/');
         } catch (error) {
             this.areCredentialsInvalid = true;
