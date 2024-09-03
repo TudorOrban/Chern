@@ -1,12 +1,12 @@
 <template>
     <div class="flex items-center justify-between w-full px-8 py-4 border-b border-gray-300 shadow-sm">
         <div>
-            <h2 class="text-xl font-semibold">Chern</h2>
+            <h2 class="text-2xl font-semibold">Chern</h2>
         </div>
         
         
-        <nav>
-            <router-link to="/">Home</router-link> |
+        <nav class="space-x-8 font-semibold text-xl">
+            <router-link to="/">Home</router-link>
             <router-link to="/dashboard">Dashboard</router-link>
             <router-link to="/transactions">Transactions</router-link>
         </nav>

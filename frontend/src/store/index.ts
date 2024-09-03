@@ -78,6 +78,7 @@ export default createStore<State>({
             }
         },
         async fetchUserTransactions({ commit, state }) {
+            console.log("Fetching user transactions");
             try {
                 if (!state.user) {
                     throw new Error('No user found');

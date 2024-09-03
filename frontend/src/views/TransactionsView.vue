@@ -20,9 +20,17 @@ import { TransactionDetailsDTO } from '@/DTOs/transaction.dto';
 export default class TransactionsView extends Vue {
     
     created() {
-        if (this.isAuthenticated && !this.user) {
+        if (this.isAuthenticated && this.user) {
             this.$store.dispatch('fetchUserTransactions');
         }
+    }
+
+    get isAuthenticated(): boolean {
+        return !!this.$store.getters.isAuthenticated;
+    }
+
+    get user() {
+        return this.$store.getters.user;
     }
 
     get transactions(): TransactionDetailsDTO[] {

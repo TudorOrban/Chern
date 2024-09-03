@@ -19,7 +19,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
     }
     
     async findTransactionsByUserId(userId: string): Promise<ITransaction[]> {
-        return Transaction.find({ userId }).exec();
+        return Transaction.find({ userId: userId }).exec();
     }
 
     async createTransaction(transactionDTO: CreateTransactionDTO): Promise<ITransaction> {

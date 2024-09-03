@@ -4,6 +4,7 @@
 
 @import url("./buttons.css");
 @import url("./forms.css");
+@import url("./common.css");
 
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
