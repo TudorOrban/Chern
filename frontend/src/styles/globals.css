@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("./buttons.css");
+@import url("./forms.css");
+
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
