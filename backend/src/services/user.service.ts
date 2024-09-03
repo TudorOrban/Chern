@@ -8,6 +8,7 @@ import bcrypt from 'bcrypt';
 export interface UserService {
     getUserById(id: number): Promise<UserDetailsDTO | null>;
     getUserByEmail(email: string): Promise<UserDetailsDTO | null>;
+    validateCredentials(email: string, password: string): Promise<IUser | null>;
     signUp(userDTO: CreateUserDTO): Promise<UserDetailsDTO>;
     updateUser(userDTO: UpdateUserDTO): Promise<UserDetailsDTO | null>;
     deleteUser(id: number): Promise<UserDetailsDTO | null>;
@@ -38,6 +39,20 @@ export class UserServiceImpl implements UserService {
                 }
                 return this.mapUserToUserDetails(user);
             });
+    }
+
+    validateCredentials = async (email: string, password: string): Promise<IUser | null> => {
+        const user = await this.userRepository.findUserByEmail(email);
+        if (!user) {
+            return null;
+        }
+
+        const doesPasswordMatch = bcrypt.compare(password, user.passwordHash);
+        if (!doesPasswordMatch) {
+            return null;
+        }
+
+        return user;
     }
 
     signUp = async (userDTO: CreateUserDTO): Promise<UserDetailsDTO> => {

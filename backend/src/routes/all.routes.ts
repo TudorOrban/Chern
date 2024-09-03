@@ -13,6 +13,7 @@ export function registerUserRoutes(router: Router): void {
     
     router.get("/users/:id", userController.getUserById);
     router.get("/users/email/:email", userController.getUserByEmail);
+    router.post("/login", userController.login);
     router.post("/users", userController.signUp);
     router.put("/users", userController.updateUser);
     router.delete("/users/:id", userController.deleteUser);

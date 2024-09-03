@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 import { UserService } from "../services/user.service";
+import { JWTService } from "../services/jwt.service";
 import TYPES from "../config/types";
 import { Request, Response, NextFunction } from 'express';
 
@@ -7,7 +8,8 @@ import { Request, Response, NextFunction } from 'express';
 export class UserController {
     
     constructor(
-        @inject(TYPES.UserService) private userService: UserService
+        @inject(TYPES.UserService) private userService: UserService,
+        @inject(TYPES.JwtService) private jwtService: JWTService
     ) {}
 
     getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -35,6 +37,28 @@ export class UserController {
             }
 
             res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { email, password } = req.body;
+
+            const user = await this.userService.validateCredentials(email, password);
+            if (!user) {
+                res.status(401).send("Invalid credentials");
+                return;
+            }
+            
+            const tokenPayload = {
+                id: user.id,
+                email: user.email
+            }
+
+            const token = this.jwtService.generateToken(tokenPayload, "1h");
+            res.json({ token });
         } catch (error) {
             next(error);
         }
