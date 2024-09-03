@@ -1,7 +1,4 @@
-import API from "@/api/axios/axios";
-import axios from "axios";
-
-const API_URL = 'http://localhost:3000/api/v1';
+import API, { API_URL } from "@/api/axios/axios";
 
 export default class AuthService {
     

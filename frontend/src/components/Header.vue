@@ -1,21 +1,40 @@
 <template>
-    <button
-        v-if="!isLoggedIn" 
-        @click="login"
-    >
-        Login
-    </button>
+    <div class="flex items-center justify-between w-full px-8 py-4 border-b border-gray-300 shadow-sm">
+        <div>
+            <h2 class="text-xl font-semibold">Chern</h2>
+        </div>
+        
+        
+        <nav>
+            <router-link to="/">Home</router-link> |
+            <router-link to="/dashboard">Dashboard</router-link>
+        </nav>
 
-    <button
-        v-if="isLoggedIn"  
-        @click="logout"
-    >
-        Logout
-    </button>
+        <div class="flex items-center space-x-2">
+            <router-link
+                v-if="!isLoggedIn" 
+                to="/login"
+            >
+                Login
+            </router-link>
 
-    <div v-if="isLoggedIn">
-        <p>Logged in</p>
+            <router-link
+                v-if="!isLoggedIn"
+                to="/sign-up"
+            >
+                Sign Up
+            </router-link>
+
+            <button
+                v-if="isLoggedIn"  
+                @click="logout"
+            >
+                Logout
+            </button>
+
+        </div>
     </div>
+    
 </template>
 
 <script lang="ts">
@@ -29,17 +48,6 @@ export default class HeaderComponent extends Vue {
     
     created() {
         this.authService = new AuthService();
-    }
-
-    async login() {
-        try {
-            const response = await this.authService.login('to2@gmail.com', 'cjql195jsov');
-            console.log("Login successful: ", response);
-            localStorage.setItem('userToken', response.token);
-            this.isLoggedIn = true;
-        } catch (error) {
-            console.error("Login failed: ", error);
-        }
     }
 
     async logout() {
