@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: "/dashboard",
         name: "dashboard",
-        component: () => import("../views/AboutView.vue"),
+        component: () => import("../views/DashboardView.vue"),
     },
     {
         path: "/login",
@@ -21,6 +21,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "/sign-up",
         name: "sign-up",
         component: () => import("../views/SignUpView.vue"),
+    },
+    {
+        path: "/profile",
+        name: "profile",
+        component: () => import("../views/UserProfileView.vue"),
     }
 ];
 

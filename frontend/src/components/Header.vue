@@ -14,6 +14,7 @@
             <router-link
                 v-if="!isAuthenticated" 
                 to="/login"
+                class="auth-button"
             >
                 Login
             </router-link>
@@ -21,6 +22,7 @@
             <router-link
                 v-if="!isAuthenticated"
                 to="/sign-up"
+                class="auth-button"
             >
                 Sign Up
             </router-link>
@@ -28,16 +30,18 @@
             <button
                 v-if="isAuthenticated"  
                 @click="logout"
+                class="auth-button"
             >
                 Logout
             </button>
 
-            <button 
+            <router-link 
                 v-if="isAuthenticated"
-                class="flex items-center justify-center w-10 h-10 bg-purple-700 rounded-full border border-gray-300 shadow-sm font-semibold text-white"
+                to="/profile"
+                class="profile-button"
             >
                 {{ userInitials }}
-            </button>
+            </router-link>
 
         </div>
     </div>
@@ -50,6 +54,12 @@ import { User } from '@/models/user.model';
 
 @Options({})
 export default class HeaderComponent extends Vue {
+
+    created() {
+        if (this.isAuthenticated || localStorage.getItem('userToken')) {
+            this.$store.dispatch('fetchUser');
+        }
+    }
 
     get isAuthenticated(): boolean {
         return !!this.$store.getters.isAuthenticated;
