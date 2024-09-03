@@ -53,7 +53,7 @@ export class UserController {
             }
             
             const tokenPayload = {
-                id: user.id,
+                id: user._id?.toString(),
                 email: user.email
             }
 

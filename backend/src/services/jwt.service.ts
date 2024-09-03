@@ -9,7 +9,7 @@ export interface JWTService {
 @injectable()
 export class JWTServiceImpl implements JWTService {
 
-    private readonly secretKey = process.env.JWT_SECRET || "qwoipssa";
+    private readonly secretKey = process.env.JWT_SECRET ?? "qwoipssa";
 
     constructor() {}
 

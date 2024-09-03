@@ -22,7 +22,13 @@ export class UserRepositoryImpl implements UserRepository {
     }
 
     async signUp(userDTO: CreateUserDTO): Promise<IUser> {
-        return User.create(userDTO);
+        const newUser = new User({
+            email: userDTO.email,
+            passwordHash: userDTO.passwordHash,
+            username: userDTO.username
+        });
+
+        return newUser.save();
     }
 
     async updateUser(userDTO: UpdateUserDTO): Promise<IUser | null> {
