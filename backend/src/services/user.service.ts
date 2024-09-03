@@ -3,6 +3,7 @@ import { UserRepository } from "../repositories/user.repository";
 import { IUser } from "../models/user.model";
 import TYPES from "../config/types";
 import { CreateUserDTO, UpdateUserDTO, UserDetailsDTO } from "../DTOs/user.dto";
+import bcrypt from 'bcrypt';
 
 export interface UserService {
     getUserById(id: number): Promise<UserDetailsDTO | null>;
@@ -40,8 +41,23 @@ export class UserServiceImpl implements UserService {
     }
 
     signUp = async (userDTO: CreateUserDTO): Promise<UserDetailsDTO> => {
-        return this.userRepository.signUp(userDTO)
-            .then((user: IUser) => this.mapUserToUserDetails(user));
+        const saltRounds = 10;
+        try {
+            // Hash password
+            const passwordHash = await bcrypt.hash(userDTO.password, saltRounds);
+
+            // Replace plain password with hash
+            const newUserDTO = {
+                ...userDTO,
+                passwordHash: passwordHash
+            };
+
+            const user = await this.userRepository.signUp(newUserDTO);
+
+            return this.mapUserToUserDetails(user);
+        } catch (error) {
+            throw new Error('Error signing up user: ' + error);
+        }
     }
 
     updateUser = async (userDTO: UpdateUserDTO): Promise<UserDetailsDTO | null> => {
@@ -68,7 +84,8 @@ export class UserServiceImpl implements UserService {
         return {
             id: user.id,
             email: user.email,
-            username: user.username
+            username: user.username,
+            passwordHash: user?.passwordHash
         };
     }
 }
