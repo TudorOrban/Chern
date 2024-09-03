@@ -77,9 +77,11 @@ export default class LoginView extends Vue {
         }
 
         try {
-            const response = await this.authService.login(this.email, this.password);
-            console.log("Login successful: ", response);
-            localStorage.setItem('userToken', response.token);
+            await this.$store.dispatch('login', {
+                email: this.email,
+                password: this.password
+            });
+            this.$router.push('/');
         } catch (error) {
             this.areCredentialsInvalid = true;
             console.error("Login failed: ", error);
