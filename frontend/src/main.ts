@@ -12,4 +12,4 @@ app.config.globalProperties.$authService = new AuthService();
 
 app.use(store)
    .use(router)
-   .mount('#app');
+   .mount('#app')

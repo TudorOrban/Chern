@@ -2,6 +2,7 @@ import "reflect-metadata";
 import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import { registerRoutes } from "./routes/all.routes";
+import cors from "cors";
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGO_URI ?? "mongodb://localhost:27017/chern";
@@ -17,6 +18,13 @@ mongoose.connect(mongoUri, {})
 // Create Express app
 const app = express();
 
+app.use(cors({
+    origin: "http://localhost:8080",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
+console.log("CORS enabled");
+
 app.use(express.json());
 
 // Register routes
@@ -29,17 +37,10 @@ app.use("/api/v1", router);
 // Set up error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
-
-    if (process.env.NODE_ENV !== 'production') {
-        res.status(err.status || 500).json({
-            error: err.message,
-            stack: err.stack
-        });
-    } else {
-        res.status(err.status || 500).json({
-            error: "Internal server error"
-        });
-    }
+    res.status(err.status || 500).json({
+        error: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
 });
 
 // Start the server
