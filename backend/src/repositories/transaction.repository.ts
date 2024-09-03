@@ -17,7 +17,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
     async findTransactionById(id: string): Promise<ITransaction | null> {
         return Transaction.findById(id).exec();
     }
-
+    
     async findTransactionsByUserId(userId: string): Promise<ITransaction[]> {
         return Transaction.find({ userId }).exec();
     }
