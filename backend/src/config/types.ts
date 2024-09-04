@@ -1,5 +1,3 @@
-import { Transaction } from "../models/transaction.model";
-
 
 const TYPES = {
     JwtService: Symbol.for("JwtService"),
@@ -10,6 +8,9 @@ const TYPES = {
     TransactionRepository: Symbol.for("TransactionRepository"),
     TransactionService: Symbol.for("TransactionService"),
     TransactionController: Symbol.for("TransactionController"),
+
+    // Utils
+    SanitizationService: Symbol.for("SanitizationService"),
 }
 
 export default TYPES;

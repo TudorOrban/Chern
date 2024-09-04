@@ -3,6 +3,8 @@ import { CreateTransactionDTO, TransactionDetailsDTO, UpdateTransactionDTO } fro
 import TYPES from "../config/types";
 import { TransactionRepository } from "../repositories/transaction.repository";
 import { ITransaction } from "../models/transaction.model";
+import { PaginatedResults, SearchParams } from "../models/search.model";
+import { SanitizationService } from "./sanitization.service";
 
 
 export interface TransactionService {
@@ -19,7 +21,8 @@ export interface TransactionService {
 export class TransactionServiceImpl implements TransactionService {
 
     constructor(
-        @inject(TYPES.TransactionRepository) private transactionRepository: TransactionRepository
+        @inject(TYPES.TransactionRepository) private transactionRepository: TransactionRepository,
+        @inject(TYPES.SanitizationService) private sanitizationService: SanitizationService,
     ) {}
     
     getTransactionById = async (transactionId: string): Promise<TransactionDetailsDTO | null> => {
@@ -30,6 +33,16 @@ export class TransactionServiceImpl implements TransactionService {
     getTransactionsByUserId = async (userId: string): Promise<TransactionDetailsDTO[]> => {
         return this.transactionRepository.findTransactionsByUserId(userId)
             .then((transactions: ITransaction[]) => transactions.map((transaction) => this.mapTransactionToTransactionDetails(transaction) as TransactionDetailsDTO));
+    }
+
+    searchTransactionsByUserId = async (userId: string, params: SearchParams): Promise<PaginatedResults<TransactionDetailsDTO>> => {
+        return this.transactionRepository.searchTransactionsByUserId(userId, params)
+            .then((paginatedResults: PaginatedResults<ITransaction>) => {
+                return {
+                    results: paginatedResults.results.map((transaction) => this.mapTransactionToTransactionDetails(transaction) as TransactionDetailsDTO),
+                    totalCount: paginatedResults.totalCount
+                };
+            });
     }
 
     createTransaction = async (transactionDTO: CreateTransactionDTO): Promise<TransactionDetailsDTO | null> => {
@@ -51,7 +64,7 @@ export class TransactionServiceImpl implements TransactionService {
         return this.transactionRepository.updateTransactionsInBulk(transactionsDTO)
             .then((transactions: ITransaction[]) => transactions.map((transaction) => this.mapTransactionToTransactionDetails(transaction) as TransactionDetailsDTO));
     }
-    
+
     deleteTransaction = async (transactionId: string): Promise<TransactionDetailsDTO | null> => {
         return this.transactionRepository.deleteTransaction(transactionId)
             .then(this.mapTransactionToTransactionDetails);

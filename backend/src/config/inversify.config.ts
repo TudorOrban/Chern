@@ -8,6 +8,7 @@ import { SecurityService, SecurityServiceImpl } from "../services/security.servi
 import { TransactionRepository, TransactionRepositoryImpl } from "../repositories/transaction.repository";
 import { TransactionService, TransactionServiceImpl } from "../services/transaction.service";
 import { TransactionController } from "../controllers/transaction.controller";
+import { SanitizationService, SanitizationServiceImpl } from "../services/sanitization.service";
 
 
 const container = new Container({ defaultScope: "Singleton" });
@@ -19,5 +20,8 @@ container.bind<UserController>(TYPES.UserController).to(UserController);
 container.bind<TransactionRepository>(TYPES.TransactionRepository).to(TransactionRepositoryImpl);
 container.bind<TransactionService>(TYPES.TransactionService).to(TransactionServiceImpl);
 container.bind<TransactionController>(TYPES.TransactionController).to(TransactionController);
+
+// Utils
+container.bind<SanitizationService>(TYPES.SanitizationService).to(SanitizationServiceImpl);
 
 export default container;
