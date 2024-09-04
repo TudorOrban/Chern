@@ -114,6 +114,37 @@
                 </tr>
             </tbody>
         </table>
+
+        <div class="flex items-center justify-end w-full">
+            <div class="bg-gray-100 border border-gray-300 flex items-center px-4 py-2">
+            <button 
+                :disabled="searchParams.page <= 1" 
+                @click="changePage(searchParams.page - 1)"
+                class="disabled:opacity-50 flex items-center"
+            >
+                <font-awesome-icon icon="caret-left" class="w-5 h-5 text-gray-800" />
+            </button>
+
+            <button
+                :disabled="n === -1"
+                v-for="n in pageNumbers"
+                :key="n"
+                :class="{'bg-blue-500 text-white border border-gray-200': n === searchParams.page, 'bg-white border border-gray-200': n !== searchParams.page}"
+                @click="changePage(n)"
+                class="px-4 py-2 rounded hover:bg-blue-300 transition-colors"
+            >
+                {{ n !== -1 ? n : '...' }}
+            </button>
+
+            <button 
+                :disabled="searchParams.page >= totalPages" 
+                @click="changePage(searchParams.page + 1)"
+                class="disabled:opacity-50 flex items-center"
+            >
+                <font-awesome-icon icon="caret-right" class="w-5 h-5 text-gray-800" />
+            </button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -133,7 +164,7 @@ export default class TransactionsView extends Vue {
         sortBy: 'date',
         isDescending: true,
         page: 1,
-        itemsPerPage: 10
+        itemsPerPage: 1
     }
 
     temporaryTransactions: CreateTransactionDTO[] = [];
@@ -149,6 +180,29 @@ export default class TransactionsView extends Vue {
 
     get transactions(): PaginatedResults<TransactionDetailsDTO> {
         return this.$store.getters.userTransactions;
+    }
+
+    get totalPages(): number {
+        return Math.ceil((this.transactions?.totalCount ?? 0) / (this.searchParams.itemsPerPage ?? 1));
+    }
+
+    get pageNumbers(): number[] {
+        const range = [];
+        let isTruncationAdded = false;
+
+        for (let i = 1; i <= this.totalPages; i++) {
+            if (i <= 5 || i > this.totalPages - 2 || (i >= this.searchParams.page - 2 && i <= this.searchParams.page + 2)) {
+                console.log('Page number:', i);
+                range.push(i);
+            } else {
+                if (!isTruncationAdded) {
+                    range.push(-1);
+                    isTruncationAdded = true;
+                }
+            }
+        }
+        console.log('Page numbers:', range);
+        return range;
     }
 
     created() {
@@ -169,6 +223,11 @@ export default class TransactionsView extends Vue {
 
     changeSortDirection() {
         this.searchParams.isDescending = !this.searchParams.isDescending;
+        this.searchTransactions();
+    }
+    
+    changePage(page: number) {
+        this.searchParams.page = page;
         this.searchTransactions();
     }
 
