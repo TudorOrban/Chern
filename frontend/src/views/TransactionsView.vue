@@ -7,7 +7,7 @@
             <div class="flex items-center space-x-2">
                 <!-- Delete -->
                 <button
-                    v-if="isAuthenticated && !isCreating && areTransactionsSelected"
+                    v-if="isAuthenticated && !isCreating && !isEditing && areTransactionsSelected"
                     class="standard-delete-button"
                     @click="deleteTransactions"
                 >
@@ -16,7 +16,7 @@
 
                 <!-- Edit -->
                 <button
-                    v-if="isAuthenticated && !isCreating && areTransactionsSelected"
+                    v-if="isAuthenticated && !isCreating && !isEditing && areTransactionsSelected"
                     class="flex items-center standard-write-button"
                     @click="editTransactions"
                 >
@@ -36,7 +36,7 @@
                 <button
                     v-if="isAuthenticated && !isCreating && isEditing"
                     class="flex items-center standard-write-button"
-                    @click="updateTransactionsInBulk"
+                    @click="saveEditedTransactions"
                 >
                     <font-awesome-icon icon="save" class="mr-2" />
                     <span>Save</span>
@@ -44,7 +44,7 @@
 
                 <!-- Add -->
                 <button
-                    v-if="isAuthenticated && isCreating"
+                    v-if="isAuthenticated && isCreating && !isEditing"
                     class="flex items-center standard-button"
                     @click="cancelCreatingTransactions"
                 >
@@ -53,7 +53,7 @@
                 </button>
                 
                 <button
-                    v-if="isAuthenticated && isCreating"
+                    v-if="isAuthenticated && isCreating && !isEditing"
                     class="flex items-center standard-write-button"
                     @click="createTransactionsInBulk"
                 >
@@ -62,7 +62,7 @@
                 </button>
 
                 <button
-                    v-if="isAuthenticated"
+                    v-if="isAuthenticated && !isCreating && !isEditing"
                     class="flex items-center standard-write-button"
                     @click="addTemporaryTransaction"
                 >
@@ -149,10 +149,41 @@
                     <td class="px-4 py-2">
                         <input type="checkbox" v-model="transaction.isSelected" @change="areTransactionsSelected = transactions.results.some(t => t.isSelected)">
                     </td>
-                    <td class="px-4 py-2">{{ formatDate(transaction?.date) }}</td>
-                    <td class="px-4 py-2">{{ transaction?.type }}</td>
-                    <td class="px-4 py-2">{{ formatCurrency(transaction.amount) }}</td>
-                    <td class="px-4 py-2">{{ transaction?.isRecurrent ? 'Yes' : 'No' }}</td>
+                    <td class="px-4 py-2">
+                        <template v-if="transaction.isEditing">
+                            <input type="date" v-model="transaction.date" class="custom-input">
+                        </template>
+                        <template v-else>
+                            {{ formatDate(transaction?.date) }}
+                        </template>
+                    </td>
+                    <td class="px-4 py-2">
+                        <template v-if="transaction.isEditing">
+                            <input type="text" v-model="transaction.type" class="custom-input">
+                        </template>
+                        <template v-else>
+                            {{ transaction?.type }}
+                        </template>
+                    </td>
+                    <td class="px-4 py-2">
+                        <template v-if="transaction.isEditing">
+                            <input type="number" v-model.number="transaction.amount" class="custom-input">
+                        </template>
+                        <template v-else>
+                            {{ formatCurrency(transaction.amount) }}
+                        </template>
+                    </td>
+                    <td class="px-4 py-2">
+                        <template v-if="transaction.isEditing">
+                            <select v-model="transaction.isRecurrent" class="custom-input">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </template>
+                        <template v-else>
+                            {{ transaction?.isRecurrent ? 'Yes' : 'No' }}
+                        </template>
+                    </td>
                 </tr>
 
                 <tr v-else>
@@ -197,7 +228,9 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import { Watch } from 'vue-property-decorator';
 import { TransactionDetailsDTO, CreateTransactionDTO } from '@/DTOs/transaction.dto';
+import { UserDetailsDTO } from '@/DTOs/user.dto';
 import TransactionService from '@/services/transaction.service';
 import { PaginatedResults, SearchParams } from '@/models/search.model';
 
@@ -218,7 +251,6 @@ export default class TransactionsView extends Vue {
     isCreating: boolean = false;
     areTransactionsSelected: boolean = false;
     isEditing: boolean = false;
-    editedTransactions: TransactionDetailsDTO[] = [];
     
     get isAuthenticated(): boolean {
         return !!this.$store.getters.isAuthenticated;
@@ -255,6 +287,15 @@ export default class TransactionsView extends Vue {
 
     created() {
         this.searchTransactions();
+    }
+
+    // Await for user to become available
+    @Watch('user', { immediate: true, deep: true })
+    onUserChanged(newValue: UserDetailsDTO, oldValue: UserDetailsDTO) {
+        console.log('User changed:', newValue, oldValue);
+        if (newValue && newValue.id !== oldValue?.id) {
+            this.searchTransactions();
+        }
     }
 
     private searchTransactions() {
@@ -321,8 +362,38 @@ export default class TransactionsView extends Vue {
 
     editTransactions() {
         this.isEditing = true;
-        this.editedTransactions = this.transactions.results.filter(t => t.isSelected);
-        this.transactions.results = this.transactions.results.filter(t => !t.isSelected);
+        for (const transaction of this.transactions.results) {
+            if (transaction.isSelected) {
+                transaction.isEditing = true;
+            }
+        }
+    }
+
+    saveEditedTransactions() {
+        const editedTransactions = this.transactions.results.filter(t => t.isEditing);
+        const transactionDTOs = editedTransactions.map(t => ({
+            id: t.id,
+            date: t.date,
+            type: t.type,
+            amount: t.amount,
+            isRecurrent: t.isRecurrent
+        }));
+        this.transactionService.updateTransactionsInBulk(transactionDTOs)
+            .then(() => {
+                this.searchTransactions();
+                this.cancelEditingTransactions();
+            })
+            .catch((error) => {
+                console.error('Failed to update transactions:', error);
+            });
+    }
+
+    cancelEditingTransactions() {
+        this.isEditing = false;
+        for (const transaction of this.transactions.results) {
+            transaction.isEditing = false;
+            transaction.isSelected = false;
+        }
     }
 
     // Utils
