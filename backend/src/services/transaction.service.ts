@@ -10,6 +10,7 @@ import { SanitizationService } from "./sanitization.service";
 export interface TransactionService {
     getTransactionById(transactionId: string): Promise<TransactionDetailsDTO | null>;
     getTransactionsByUserId(userId: string): Promise<TransactionDetailsDTO[]>;
+    searchTransactionsByUserId(userId: string, params: SearchParams): Promise<PaginatedResults<TransactionDetailsDTO>>;
     createTransaction(transaction: CreateTransactionDTO): Promise<TransactionDetailsDTO | null>;
     createTransactionsInBulk(transactions: CreateTransactionDTO[]): Promise<TransactionDetailsDTO[]>;
     updateTransaction(transaction: UpdateTransactionDTO): Promise<TransactionDetailsDTO | null>;
@@ -36,7 +37,8 @@ export class TransactionServiceImpl implements TransactionService {
     }
 
     searchTransactionsByUserId = async (userId: string, params: SearchParams): Promise<PaginatedResults<TransactionDetailsDTO>> => {
-        return this.transactionRepository.searchTransactionsByUserId(userId, params)
+        const sanitizedParams = this.sanitizeSearchParams(params);
+        return this.transactionRepository.searchTransactionsByUserId(userId, sanitizedParams)
             .then((paginatedResults: PaginatedResults<ITransaction>) => {
                 return {
                     results: paginatedResults.results.map((transaction) => this.mapTransactionToTransactionDetails(transaction) as TransactionDetailsDTO),
@@ -79,6 +81,16 @@ export class TransactionServiceImpl implements TransactionService {
             type: transaction?.type,
             date: transaction?.date,
             isRecurrent: transaction?.isRecurrent
+        };
+    }
+
+    private sanitizeSearchParams(params: SearchParams): SearchParams {
+        return {
+            searchQuery: this.sanitizationService.sanitizeInput(params.searchQuery) ?? "",
+            sortBy: this.sanitizationService.sanitizeInput(params.sortBy) ?? "",
+            isDescending: params.isDescending,
+            page: params.page,
+            itemsPerPage: params.itemsPerPage
         };
     }
 
