@@ -1,5 +1,6 @@
 import API, { API_URL } from "@/api/axios/axios";
 import { CreateTransactionDTO, TransactionDetailsDTO, UpdateTransactionDTO } from "@/DTOs/transaction.dto";
+import { PaginatedResults, SearchParams } from "@/models/search.model";
 
 export default class TransactionService {
     
@@ -11,6 +12,12 @@ export default class TransactionService {
 
     async getTransactionsByUser(userId: string): Promise<TransactionDetailsDTO[]> {
         const response = await API.get(`${API_URL}/transactions/user/${userId}`);
+
+        return response.data;
+    }
+
+    async searchTransactionsByUser(userId: string, params: SearchParams): Promise<PaginatedResults<TransactionDetailsDTO>> {
+        const response = await API.get(`${API_URL}/transactions/user/${userId}/search`, { params });
 
         return response.data;
     }
@@ -38,7 +45,7 @@ export default class TransactionService {
 
         return response.data;
     }
-    
+
     async deleteTransaction(id: string): Promise<TransactionDetailsDTO | null> {
         const response = await API.delete(`${API_URL}/transactions/${id}`);
 

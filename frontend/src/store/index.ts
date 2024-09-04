@@ -1,4 +1,5 @@
 import { TransactionDetailsDTO } from "@/DTOs/transaction.dto";
+import { PaginatedResults, SearchParams } from "@/models/search.model";
 import { User } from "@/models/user.model";
 import AuthService from "@/services/auth.service";
 import TransactionService from "@/services/transaction.service";
@@ -12,7 +13,7 @@ const transactionService = new TransactionService();
 interface State {
     user: User | null;
     token: string | null;
-    userTransactions: TransactionDetailsDTO[] | null;
+    userTransactions: PaginatedResults<TransactionDetailsDTO> | null;
 }
 
 export default createStore<State>({
@@ -24,7 +25,7 @@ export default createStore<State>({
     getters: {
         isAuthenticated: (state: State): boolean => !!state.token,
         user: (state: State): User | null => state.user,
-        userTransactions: (state: State): TransactionDetailsDTO[] | null => state.userTransactions,
+        userTransactions: (state: State): PaginatedResults<TransactionDetailsDTO> | null => state.userTransactions,
     },
     mutations: {
         setToken(state, token) {
@@ -77,17 +78,16 @@ export default createStore<State>({
                 throw error;
             }
         },
-        async fetchUserTransactions({ commit, state }) {
-            console.log("Fetching user transactions");
+        async searchUserTransactions({ commit, state }, searchParams: SearchParams) {
             try {
                 if (!state.user) {
                     throw new Error('No user found');
                 }
-                const transactions = await transactionService.getTransactionsByUser(state.user.id);
+                const transactions = await transactionService.searchTransactionsByUser(state.user.id, searchParams);
                 commit("setUserTransactions", transactions);
             } catch (error) {
                 console.error(error);
-                throw new Error('Failed to fetch user transactions');
+                throw new Error('Failed to search user transactions');
             }
         },
         logout({ commit }) {

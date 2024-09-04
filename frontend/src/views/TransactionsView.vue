@@ -57,6 +57,7 @@
             </div>
         </div>
         
+        <!-- Transactions Table -->
         <table class="w-full border border-gray-200 rounded-md shadow-sm">
             <thead>
                 <tr class="bg-gray-100">
@@ -67,7 +68,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="transaction in transactions" :key="transaction.id" class="border-b">
+                <tr v-for="transaction in transactions.results" :key="transaction.id" class="border-b">
                     <td class="px-4 py-2">{{ formatDate(transaction?.date) }}</td>
                     <td class="px-4 py-2">{{ transaction?.type }}</td>
                     <td class="px-4 py-2">{{ formatCurrency(transaction.amount) }}</td>
@@ -100,6 +101,7 @@
 import { Options, Vue } from 'vue-class-component';
 import { TransactionDetailsDTO, CreateTransactionDTO } from '@/DTOs/transaction.dto';
 import TransactionService from '@/services/transaction.service';
+import { PaginatedResults } from '@/models/search.model';
 
 @Options({})
 export default class TransactionsView extends Vue {
@@ -114,7 +116,7 @@ export default class TransactionsView extends Vue {
     
     created() {
         if (this.isAuthenticated && this.user) {
-            this.$store.dispatch('fetchUserTransactions');
+            this.$store.dispatch('searchUserTransactions');
         }
     }
 
@@ -126,7 +128,7 @@ export default class TransactionsView extends Vue {
         return this.$store.getters.user;
     }
 
-    get transactions(): TransactionDetailsDTO[] {
+    get transactions(): PaginatedResults<TransactionDetailsDTO> {
         return this.$store.getters.userTransactions;
     }
 
@@ -137,7 +139,7 @@ export default class TransactionsView extends Vue {
 
     refreshTransactions() {
         if (this.isAuthenticated && this.user) {
-            this.$store.dispatch('fetchUserTransactions');
+            this.$store.dispatch('searchUserTransactions');
         }
     }
 
