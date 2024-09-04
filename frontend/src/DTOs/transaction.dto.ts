@@ -13,6 +13,9 @@ export interface CreateTransactionDTO {
     type?: string;
     date?: Date;
     isRecurrent?: boolean;
+
+    // UI types:
+    temporaryId?: string;
 }
 
 export interface UpdateTransactionDTO {

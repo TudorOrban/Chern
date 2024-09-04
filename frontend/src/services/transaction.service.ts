@@ -11,12 +11,18 @@ export default class TransactionService {
 
     async getTransactionsByUser(userId: string): Promise<TransactionDetailsDTO[]> {
         const response = await API.get(`${API_URL}/transactions/user/${userId}`);
-        console.log("Response", response.data);
+
         return response.data;
     }
 
     async createTransaction(transaction: CreateTransactionDTO): Promise<TransactionDetailsDTO | null> {
         const response = await API.post(`${API_URL}/transactions`, transaction);
+
+        return response.data;
+    }
+
+    async createTransactionsInBulk(transactions: CreateTransactionDTO[]): Promise<TransactionDetailsDTO[]> {
+        const response = await API.post(`${API_URL}/transactions/bulk`, transactions);
 
         return response.data;
     }
@@ -27,6 +33,12 @@ export default class TransactionService {
         return response.data;
     }
 
+    async updateTransactionsInBulk(transactions: UpdateTransactionDTO[]): Promise<TransactionDetailsDTO[]> {
+        const response = await API.put(`${API_URL}/transactions/bulk`, transactions);
+
+        return response.data;
+    }
+    
     async deleteTransaction(id: string): Promise<TransactionDetailsDTO | null> {
         const response = await API.delete(`${API_URL}/transactions/${id}`);
 
