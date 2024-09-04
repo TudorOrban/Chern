@@ -1,5 +1,5 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faArrowDownShortWide, faArrowRotateRight, faArrowUpWideShort, faCaretLeft, faCaretRight, faEdit, faPlus, faSave, faSearch, faTimes, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowRotateRight, faArrowUpWideShort, faCaretLeft, faCaretRight, faEdit, faPlus, faSave, faSearch, faSpinner, faTimes, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons"
 
 export const loadFAIcons = () => {
     library.add(faPlus);
@@ -14,4 +14,5 @@ export const loadFAIcons = () => {
     library.add(faSearch);
     library.add(faCaretLeft);
     library.add(faCaretRight);
+    library.add(faSpinner);
 }

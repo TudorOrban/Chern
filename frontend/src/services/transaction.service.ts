@@ -51,4 +51,10 @@ export default class TransactionService {
 
         return response.data;
     }
+
+    async deleteTransactionsInBulk(ids: string[]): Promise<TransactionDetailsDTO[]> {
+        const response = await API.delete(`${API_URL}/transactions/bulk`, { data: ids });
+
+        return response.data;
+    }
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="page-standard-horizontal-padding py-4">
+    <div class="page-standard-horizontal-padding py-4 relative">
         <div class="flex items-center justify-between">
             <h1 class="page-title py-4">Transactions ({{ transactions?.totalCount ?? 0 }})</h1>
 
@@ -9,7 +9,7 @@
                 <button
                     v-if="isAuthenticated && !isCreating && !isEditing && areTransactionsSelected"
                     class="standard-delete-button"
-                    @click="deleteTransactions"
+                    @click="openDeleteDialog"
                 >
                     <font-awesome-icon icon="trash" />
                 </button>
@@ -114,83 +114,89 @@
         </div>
         
         <!-- Transactions Table -->
-        <table class="w-full border border-gray-200 rounded-md shadow-sm">
-            <thead>
-                <tr class="bg-gray-100 border-b border-gray-300">
-                    <th class="px-4 py-2"><input type="checkbox" @change="toggleAll" v-model="allSelected"></th>
-                    <th class="px-4 py-2">Date</th>
-                    <th class="px-4 py-2">Type</th>
-                    <th class="px-4 py-2">Amount</th>
-                    <th class="px-4 py-2">Recurrent</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Temporary Transactions (for Create) -->
-                <tr v-for="(transaction, index) in temporaryTransactions" :key="transaction.temporaryId" class="border-b">
-                    <td class="px-4 py-2">
-                        <input type="date" v-model="transaction.date" class="custom-input">
-                    </td>
-                    <td class="px-4 py-2">
-                        <input type="text" v-model="transaction.type" class="custom-input">
-                    </td>
-                    <td class="px-4 py-2">
-                        <input type="number" v-model.number="transaction.amount" class="custom-input">
-                    </td>
-                    <td class="px-4 py-2">
-                        <select v-model="transaction.isRecurrent" class="custom-input">
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                    </td>
-                </tr>
-
-                <!-- Transactions list -->
-                <tr v-if="transactions?.results?.length > 0" v-for="transaction in transactions?.results ?? []" :key="transaction.id" class="border-b">
-                    <td class="px-4 py-2">
-                        <input type="checkbox" v-model="transaction.isSelected" @change="areTransactionsSelected = transactions.results.some(t => t.isSelected)">
-                    </td>
-                    <td class="px-4 py-2">
-                        <template v-if="transaction.isEditing">
+        <div class="relative w-full">
+            <div v-if="isLoading" class="absolute inset-0 bg-gray-100 bg-opacity-50 flex justify-center items-center">
+                <font-awesome-icon icon="spinner" spin size="3x" />
+            </div>
+            
+            <table class="w-full border border-gray-200 rounded-md shadow-sm">
+                <thead>
+                    <tr class="bg-gray-100 border-b border-gray-300">
+                        <th class="px-4 py-2"><input type="checkbox" @change="toggleAll" v-model="allSelected"></th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Type</th>
+                        <th class="px-4 py-2">Amount</th>
+                        <th class="px-4 py-2">Recurrent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Temporary Transactions (for Create) -->
+                    <tr v-for="(transaction, index) in temporaryTransactions" :key="transaction.temporaryId" class="border-b">
+                        <td class="px-4 py-2">
                             <input type="date" v-model="transaction.date" class="custom-input">
-                        </template>
-                        <template v-else>
-                            {{ formatDate(transaction?.date) }}
-                        </template>
-                    </td>
-                    <td class="px-4 py-2">
-                        <template v-if="transaction.isEditing">
+                        </td>
+                        <td class="px-4 py-2">
                             <input type="text" v-model="transaction.type" class="custom-input">
-                        </template>
-                        <template v-else>
-                            {{ transaction?.type }}
-                        </template>
-                    </td>
-                    <td class="px-4 py-2">
-                        <template v-if="transaction.isEditing">
+                        </td>
+                        <td class="px-4 py-2">
                             <input type="number" v-model.number="transaction.amount" class="custom-input">
-                        </template>
-                        <template v-else>
-                            {{ formatCurrency(transaction.amount) }}
-                        </template>
-                    </td>
-                    <td class="px-4 py-2">
-                        <template v-if="transaction.isEditing">
+                        </td>
+                        <td class="px-4 py-2">
                             <select v-model="transaction.isRecurrent" class="custom-input">
                                 <option value="true">Yes</option>
                                 <option value="false">No</option>
                             </select>
-                        </template>
-                        <template v-else>
-                            {{ transaction?.isRecurrent ? 'Yes' : 'No' }}
-                        </template>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
 
-                <tr v-else>
-                    <td class="p-4 text-lg font-semibold" colspan="5">No transactions found.</td>
-                </tr>
-            </tbody>
-        </table>
+                    <!-- Transactions list -->
+                    <tr v-if="transactions?.results?.length > 0" v-for="transaction in transactions?.results ?? []" :key="transaction.id" class="border-b">
+                        <td class="px-4 py-2">
+                            <input type="checkbox" v-model="transaction.isSelected" @change="areTransactionsSelected = transactions.results.some(t => t.isSelected)">
+                        </td>
+                        <td class="px-4 py-2">
+                            <template v-if="transaction.isEditing">
+                                <input type="date" v-model="transaction.date" class="custom-input">
+                            </template>
+                            <template v-else>
+                                {{ formatDate(transaction?.date) }}
+                            </template>
+                        </td>
+                        <td class="px-4 py-2">
+                            <template v-if="transaction.isEditing">
+                                <input type="text" v-model="transaction.type" class="custom-input">
+                            </template>
+                            <template v-else>
+                                {{ transaction?.type }}
+                            </template>
+                        </td>
+                        <td class="px-4 py-2">
+                            <template v-if="transaction.isEditing">
+                                <input type="number" v-model.number="transaction.amount" class="custom-input">
+                            </template>
+                            <template v-else>
+                                {{ formatCurrency(transaction.amount) }}
+                            </template>
+                        </td>
+                        <td class="px-4 py-2">
+                            <template v-if="transaction.isEditing">
+                                <select v-model="transaction.isRecurrent" class="custom-input">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </template>
+                            <template v-else>
+                                {{ transaction?.isRecurrent ? 'Yes' : 'No' }}
+                            </template>
+                        </td>
+                    </tr>
+
+                    <tr v-else>
+                        <td class="p-4 text-lg font-semibold" colspan="5">No transactions found.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Page Selector -->
         <div class="flex items-center justify-end w-full">
@@ -223,6 +229,19 @@
                 </button>
             </div>
         </div>
+        
+        <div v-if="isConfirmDialogOpen" class="absolute inset-0 bg-gray-100 flex justify-center items-center">
+            <div class="confirm-dialog p-8 w-96 h-60 border border-gray-300 rounded-md shadow-sm">
+                <div class="page-title">
+                    Delete Transactions
+                </div>
+                <p class="py-4">Are you sure you want to delete the selected transactions?</p>
+                <div class="flex items-center justify-between w-full px-8 py-4">
+                    <button class="standard-button" @click="cancelDelete">Cancel</button>
+                    <button class="standard-write-button" @click="confirmDelete">Confirm</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -238,6 +257,8 @@ import { PaginatedResults, SearchParams } from '@/models/search.model';
 export default class TransactionsView extends Vue {
     transactionService = new TransactionService();
 
+    isLoading: boolean = false;
+
     sortOptions = ['date', 'amount'];
     searchParams: SearchParams = {
         searchQuery: '',
@@ -251,6 +272,7 @@ export default class TransactionsView extends Vue {
     isCreating: boolean = false;
     areTransactionsSelected: boolean = false;
     isEditing: boolean = false;
+    isConfirmDialogOpen: boolean = false;
     
     get isAuthenticated(): boolean {
         return !!this.$store.getters.isAuthenticated;
@@ -298,10 +320,11 @@ export default class TransactionsView extends Vue {
         }
     }
 
-    private searchTransactions() {
+    private async searchTransactions() {
         if (this.isAuthenticated && this.user) {
-            this.$store.dispatch('searchUserTransactions', this.searchParams);
-            console.log('User transactions:', this.transactions);
+            this.isLoading = true;
+            await this.$store.dispatch('searchUserTransactions', this.searchParams);
+            this.isLoading = false;
         }
     }
 
@@ -394,6 +417,28 @@ export default class TransactionsView extends Vue {
             transaction.isEditing = false;
             transaction.isSelected = false;
         }
+    }
+
+    // - Delete
+    openDeleteDialog() {
+        this.isConfirmDialogOpen = true;
+    }
+
+    confirmDelete() {
+        const transactionsToDelete = this.transactions.results.filter(t => t.isSelected);
+        const transactionIds = transactionsToDelete.map(t => t.id);
+        this.transactionService.deleteTransactionsInBulk(transactionIds)
+            .then(() => {
+                this.searchTransactions();
+                this.cancelDelete();
+            })
+            .catch((error) => {
+                console.error('Failed to delete transactions:', error);
+            });
+    }
+
+    cancelDelete() {
+        this.isConfirmDialogOpen = false;
     }
 
     // Utils
