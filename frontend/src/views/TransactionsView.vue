@@ -1,32 +1,7 @@
 <template>
     <div class="page-standard-horizontal-padding py-4">
         <div class="flex items-center justify-between">
-            <h1 class="page-title py-4">Transactions</h1>
-
-            <!-- Search Options -->
-            <div class="flex items-center space-x-2">
-                <select v-model="selectedSortOption" @change="sortTransactions" class="custom-select">
-                    <option disabled value="">Sort by</option>
-                    <option v-for="option in sortOptions" :key="option" :value="option">
-                        {{ option.charAt(0).toUpperCase() + option.slice(1) }}
-                    </option>
-                </select>
-
-                <button
-                    class="standard-button w-9 h-9 flex items-center justify-center"
-                    @click="changeSortDirection"
-                >
-                    <font-awesome-icon v-if="sortDirection" icon="arrow-up-wide-short"/>
-                    <font-awesome-icon v-else icon="arrow-down-short-wide"/>
-                </button>
-
-                <button
-                    class="standard-button w-9 h-9 flex items-center justify-center"
-                    @click="refreshTransactions"
-                >
-                    <font-awesome-icon icon="arrow-rotate-right"/>
-                </button>
-            </div>
+            <h1 class="page-title py-4">Transactions ({{ transactions?.totalCount ?? 0 }})</h1>
 
             <!-- Write Options -->
             <div class="flex items-center space-x-2">
@@ -56,11 +31,52 @@
                 </button>
             </div>
         </div>
+
+        <!-- Search Options -->
+        <div class="flex items-center space-x-2 py-4">
+            <div class="flex items-center">
+                <input
+                    v-model="searchParams.searchQuery"
+                    type="text"
+                    class="custom-input h-9"
+                    placeholder="Search transactions"
+                >
+                <button
+                    class="standard-button w-9 h-9 flex items-center justify-center"
+                    @click="searchTransactions"
+                >
+                    <font-awesome-icon icon="search"/>
+                </button>
+            </div>
+
+
+            <select v-model="searchParams.sortBy" @change="sortTransactions" class="custom-select">
+                <option disabled value="">Sort by</option>
+                <option v-for="option in sortOptions" :key="option" :value="option">
+                    {{ option.charAt(0).toUpperCase() + option.slice(1) }}
+                </option>
+            </select>
+
+            <button
+                class="standard-button w-9 h-9 flex items-center justify-center"
+                @click="changeSortDirection"
+            >
+                <font-awesome-icon v-if="searchParams.isDescending" icon="arrow-up-wide-short"/>
+                <font-awesome-icon v-else icon="arrow-down-short-wide"/>
+            </button>
+
+            <button
+                class="standard-button w-9 h-9 flex items-center justify-center"
+                @click="searchTransactions"
+            >
+                <font-awesome-icon icon="arrow-rotate-right"/>
+            </button>
+        </div>
         
         <!-- Transactions Table -->
         <table class="w-full border border-gray-200 rounded-md shadow-sm">
             <thead>
-                <tr class="bg-gray-100">
+                <tr class="bg-gray-100 border-b border-gray-300">
                     <th class="px-4 py-2">Date</th>
                     <th class="px-4 py-2">Type</th>
                     <th class="px-4 py-2">Amount</th>
@@ -68,11 +84,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="transaction in transactions.results" :key="transaction.id" class="border-b">
+                <tr v-if="transactions?.results?.length > 0" v-for="transaction in transactions?.results ?? []" :key="transaction.id" class="border-b">
                     <td class="px-4 py-2">{{ formatDate(transaction?.date) }}</td>
                     <td class="px-4 py-2">{{ transaction?.type }}</td>
                     <td class="px-4 py-2">{{ formatCurrency(transaction.amount) }}</td>
                     <td class="px-4 py-2">{{ transaction?.isRecurrent ? 'Yes' : 'No' }}</td>
+                </tr>
+
+                <tr v-else>
+                    <td class="p-4 text-lg font-semibold" colspan="4">No transactions found.</td>
                 </tr>
 
                 <tr v-for="(transaction, index) in temporaryTransactions" :key="transaction.temporaryId" class="border-b">
@@ -101,25 +121,24 @@
 import { Options, Vue } from 'vue-class-component';
 import { TransactionDetailsDTO, CreateTransactionDTO } from '@/DTOs/transaction.dto';
 import TransactionService from '@/services/transaction.service';
-import { PaginatedResults } from '@/models/search.model';
+import { PaginatedResults, SearchParams } from '@/models/search.model';
 
 @Options({})
 export default class TransactionsView extends Vue {
     transactionService = new TransactionService();
 
-    selectedSortOption = '';
     sortOptions = ['date', 'amount'];
-    sortDirection: boolean = true;
+    searchParams: SearchParams = {
+        searchQuery: '',
+        sortBy: 'date',
+        isDescending: true,
+        page: 1,
+        itemsPerPage: 10
+    }
 
     temporaryTransactions: CreateTransactionDTO[] = [];
     isCreating: boolean = false;
     
-    created() {
-        if (this.isAuthenticated && this.user) {
-            this.$store.dispatch('searchUserTransactions');
-        }
-    }
-
     get isAuthenticated(): boolean {
         return !!this.$store.getters.isAuthenticated;
     }
@@ -132,15 +151,25 @@ export default class TransactionsView extends Vue {
         return this.$store.getters.userTransactions;
     }
 
-    // Search handlers
-    changeSortDirection() {
-        this.sortDirection = !this.sortDirection;
+    created() {
+        this.searchTransactions();
     }
 
-    refreshTransactions() {
+    private searchTransactions() {
         if (this.isAuthenticated && this.user) {
-            this.$store.dispatch('searchUserTransactions');
+            this.$store.dispatch('searchUserTransactions', this.searchParams);
+            console.log('User transactions:', this.transactions);
         }
+    }
+
+    // Search handlers
+    sortTransactions() {
+        this.searchTransactions();
+    }
+
+    changeSortDirection() {
+        this.searchParams.isDescending = !this.searchParams.isDescending;
+        this.searchTransactions();
     }
 
     // Write Handlers
