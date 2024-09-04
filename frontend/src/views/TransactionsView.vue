@@ -3,8 +3,46 @@
         <div class="flex items-center justify-between">
             <h1 class="page-title py-4">Transactions ({{ transactions?.totalCount ?? 0 }})</h1>
 
-            <!-- Write Options -->
+            <!-- Write Operations -->
             <div class="flex items-center space-x-2">
+                <!-- Delete -->
+                <button
+                    v-if="isAuthenticated && !isCreating && areTransactionsSelected"
+                    class="standard-delete-button"
+                    @click="deleteTransactions"
+                >
+                    <font-awesome-icon icon="trash" />
+                </button>
+
+                <!-- Edit -->
+                <button
+                    v-if="isAuthenticated && !isCreating && areTransactionsSelected"
+                    class="flex items-center standard-write-button"
+                    @click="editTransactions"
+                >
+                    <font-awesome-icon icon="edit" class="mr-2" />
+                    <span>Edit</span>
+                </button>   
+
+                <button
+                    v-if="isAuthenticated && !isCreating && isEditing"
+                    class="flex items-center standard-button"
+                    @click="cancelEditingTransactions"
+                >
+                    <font-awesome-icon icon="times" class="mr-2" />
+                    <span>Cancel</span>
+                </button>
+
+                <button
+                    v-if="isAuthenticated && !isCreating && isEditing"
+                    class="flex items-center standard-write-button"
+                    @click="updateTransactionsInBulk"
+                >
+                    <font-awesome-icon icon="save" class="mr-2" />
+                    <span>Save</span>
+                </button>
+
+                <!-- Add -->
                 <button
                     v-if="isAuthenticated && isCreating"
                     class="flex items-center standard-button"
@@ -13,6 +51,7 @@
                     <font-awesome-icon icon="times" class="mr-2" />
                     <span>Cancel</span>
                 </button>
+                
                 <button
                     v-if="isAuthenticated && isCreating"
                     class="flex items-center standard-write-button"
@@ -21,6 +60,7 @@
                     <font-awesome-icon icon="save" class="mr-2" />
                     <span>Save</span>
                 </button>
+
                 <button
                     v-if="isAuthenticated"
                     class="flex items-center standard-write-button"
@@ -39,7 +79,7 @@
                     v-model="searchParams.searchQuery"
                     type="text"
                     class="custom-input h-9"
-                    placeholder="Search transactions"
+                    placeholder="Search by Type"
                 >
                 <button
                     class="standard-button w-9 h-9 flex items-center justify-center"
@@ -77,6 +117,7 @@
         <table class="w-full border border-gray-200 rounded-md shadow-sm">
             <thead>
                 <tr class="bg-gray-100 border-b border-gray-300">
+                    <th class="px-4 py-2"><input type="checkbox" @change="toggleAll" v-model="allSelected"></th>
                     <th class="px-4 py-2">Date</th>
                     <th class="px-4 py-2">Type</th>
                     <th class="px-4 py-2">Amount</th>
@@ -84,17 +125,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-if="transactions?.results?.length > 0" v-for="transaction in transactions?.results ?? []" :key="transaction.id" class="border-b">
-                    <td class="px-4 py-2">{{ formatDate(transaction?.date) }}</td>
-                    <td class="px-4 py-2">{{ transaction?.type }}</td>
-                    <td class="px-4 py-2">{{ formatCurrency(transaction.amount) }}</td>
-                    <td class="px-4 py-2">{{ transaction?.isRecurrent ? 'Yes' : 'No' }}</td>
-                </tr>
-
-                <tr v-else>
-                    <td class="p-4 text-lg font-semibold" colspan="4">No transactions found.</td>
-                </tr>
-
+                <!-- Temporary Transactions (for Create) -->
                 <tr v-for="(transaction, index) in temporaryTransactions" :key="transaction.temporaryId" class="border-b">
                     <td class="px-4 py-2">
                         <input type="date" v-model="transaction.date" class="custom-input">
@@ -112,37 +143,53 @@
                         </select>
                     </td>
                 </tr>
+
+                <!-- Transactions list -->
+                <tr v-if="transactions?.results?.length > 0" v-for="transaction in transactions?.results ?? []" :key="transaction.id" class="border-b">
+                    <td class="px-4 py-2">
+                        <input type="checkbox" v-model="transaction.isSelected" @change="areTransactionsSelected = transactions.results.some(t => t.isSelected)">
+                    </td>
+                    <td class="px-4 py-2">{{ formatDate(transaction?.date) }}</td>
+                    <td class="px-4 py-2">{{ transaction?.type }}</td>
+                    <td class="px-4 py-2">{{ formatCurrency(transaction.amount) }}</td>
+                    <td class="px-4 py-2">{{ transaction?.isRecurrent ? 'Yes' : 'No' }}</td>
+                </tr>
+
+                <tr v-else>
+                    <td class="p-4 text-lg font-semibold" colspan="5">No transactions found.</td>
+                </tr>
             </tbody>
         </table>
 
+        <!-- Page Selector -->
         <div class="flex items-center justify-end w-full">
             <div class="bg-gray-100 border border-gray-300 flex items-center px-4 py-2">
-            <button 
-                :disabled="searchParams.page <= 1" 
-                @click="changePage(searchParams.page - 1)"
-                class="disabled:opacity-50 flex items-center"
-            >
-                <font-awesome-icon icon="caret-left" class="w-5 h-5 text-gray-800" />
-            </button>
+                <button 
+                    :disabled="searchParams.page <= 1" 
+                    @click="changePage(searchParams.page - 1)"
+                    class="disabled:opacity-50 flex items-center"
+                >
+                    <font-awesome-icon icon="caret-left" class="w-5 h-5 text-gray-800" />
+                </button>
 
-            <button
-                :disabled="n === -1"
-                v-for="n in pageNumbers"
-                :key="n"
-                :class="{'bg-blue-500 text-white border border-gray-200': n === searchParams.page, 'bg-white border border-gray-200': n !== searchParams.page}"
-                @click="changePage(n)"
-                class="px-4 py-2 rounded hover:bg-blue-300 transition-colors"
-            >
-                {{ n !== -1 ? n : '...' }}
-            </button>
+                <button
+                    :disabled="n === -1"
+                    v-for="n in pageNumbers"
+                    :key="n"
+                    :class="{'bg-blue-500 text-white border border-gray-200': n === searchParams.page, 'bg-white border border-gray-200': n !== searchParams.page}"
+                    @click="changePage(n)"
+                    class="px-4 py-2 rounded hover:bg-blue-300 transition-colors"
+                >
+                    {{ n !== -1 ? n : '...' }}
+                </button>
 
-            <button 
-                :disabled="searchParams.page >= totalPages" 
-                @click="changePage(searchParams.page + 1)"
-                class="disabled:opacity-50 flex items-center"
-            >
-                <font-awesome-icon icon="caret-right" class="w-5 h-5 text-gray-800" />
-            </button>
+                <button 
+                    :disabled="searchParams.page >= totalPages" 
+                    @click="changePage(searchParams.page + 1)"
+                    class="disabled:opacity-50 flex items-center"
+                >
+                    <font-awesome-icon icon="caret-right" class="w-5 h-5 text-gray-800" />
+                </button>
             </div>
         </div>
     </div>
@@ -164,11 +211,14 @@ export default class TransactionsView extends Vue {
         sortBy: 'date',
         isDescending: true,
         page: 1,
-        itemsPerPage: 1
+        itemsPerPage: 10
     }
 
     temporaryTransactions: CreateTransactionDTO[] = [];
     isCreating: boolean = false;
+    areTransactionsSelected: boolean = false;
+    isEditing: boolean = false;
+    editedTransactions: TransactionDetailsDTO[] = [];
     
     get isAuthenticated(): boolean {
         return !!this.$store.getters.isAuthenticated;
@@ -192,7 +242,6 @@ export default class TransactionsView extends Vue {
 
         for (let i = 1; i <= this.totalPages; i++) {
             if (i <= 5 || i > this.totalPages - 2 || (i >= this.searchParams.page - 2 && i <= this.searchParams.page + 2)) {
-                console.log('Page number:', i);
                 range.push(i);
             } else {
                 if (!isTruncationAdded) {
@@ -201,7 +250,6 @@ export default class TransactionsView extends Vue {
                 }
             }
         }
-        console.log('Page numbers:', range);
         return range;
     }
 
@@ -232,6 +280,7 @@ export default class TransactionsView extends Vue {
     }
 
     // Write Handlers
+    // - Create
     addTemporaryTransaction() {
         this.isCreating = true;
 
@@ -246,12 +295,34 @@ export default class TransactionsView extends Vue {
     }
 
     createTransactionsInBulk() {
-
+        if (this.isAuthenticated && this.user) {
+            this.transactionService.createTransactionsInBulk(this.temporaryTransactions)
+                .then(() => {
+                    this.searchTransactions();
+                    this.cancelCreatingTransactions();
+                })
+                .catch((error) => {
+                    console.error('Failed to create transactions:', error);
+                });
+        }
     }
 
     cancelCreatingTransactions() {
         this.isCreating = false;
         this.temporaryTransactions = [];
+    }
+
+    // - Update
+    toggleAll() {
+        const currentState = this.allSelected;
+        this.temporaryTransactions.forEach(t => t.isSelected = currentState);
+        this.transactions.results.forEach(t => t.isSelected = currentState);
+    }
+
+    editTransactions() {
+        this.isEditing = true;
+        this.editedTransactions = this.transactions.results.filter(t => t.isSelected);
+        this.transactions.results = this.transactions.results.filter(t => !t.isSelected);
     }
 
     // Utils

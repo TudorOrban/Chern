@@ -5,6 +5,7 @@ export interface TransactionDetailsDTO {
     type?: string;
     date?: Date;
     isRecurrent?: boolean;
+    isSelected?: boolean;
 }
 
 export interface CreateTransactionDTO {
@@ -16,6 +17,7 @@ export interface CreateTransactionDTO {
 
     // UI types:
     temporaryId?: string;
+    isSelected?: boolean;
 }
 
 export interface UpdateTransactionDTO {
