@@ -9,7 +9,9 @@ export interface TransactionService {
     getTransactionById(transactionId: string): Promise<TransactionDetailsDTO | null>;
     getTransactionsByUserId(userId: string): Promise<TransactionDetailsDTO[]>;
     createTransaction(transaction: CreateTransactionDTO): Promise<TransactionDetailsDTO | null>;
+    createTransactionsInBulk(transactions: CreateTransactionDTO[]): Promise<TransactionDetailsDTO[]>;
     updateTransaction(transaction: UpdateTransactionDTO): Promise<TransactionDetailsDTO | null>;
+    updateTransactionsInBulk(transactions: UpdateTransactionDTO[]): Promise<TransactionDetailsDTO[]>;
     deleteTransaction(transactionId: string): Promise<TransactionDetailsDTO | null>;
 }
 
@@ -35,9 +37,19 @@ export class TransactionServiceImpl implements TransactionService {
             .then(this.mapTransactionToTransactionDetails);
     }
 
+    createTransactionsInBulk = async (transactionsDTO: CreateTransactionDTO[]): Promise<TransactionDetailsDTO[]> => {
+        return this.transactionRepository.createTransactionsInBulk(transactionsDTO)
+            .then((transactions: ITransaction[]) => transactions.map((transaction) => this.mapTransactionToTransactionDetails(transaction) as TransactionDetailsDTO));
+    }
+
     updateTransaction = async (transactionDTO: UpdateTransactionDTO): Promise<TransactionDetailsDTO | null> => {
         return this.transactionRepository.updateTransaction(transactionDTO)
             .then(this.mapTransactionToTransactionDetails);
+    }
+    
+    updateTransactionsInBulk = async (transactionsDTO: UpdateTransactionDTO[]): Promise<TransactionDetailsDTO[]> => {
+        return this.transactionRepository.updateTransactionsInBulk(transactionsDTO)
+            .then((transactions: ITransaction[]) => transactions.map((transaction) => this.mapTransactionToTransactionDetails(transaction) as TransactionDetailsDTO));
     }
     
     deleteTransaction = async (transactionId: string): Promise<TransactionDetailsDTO | null> => {

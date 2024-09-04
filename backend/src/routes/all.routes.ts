@@ -33,6 +33,8 @@ export function registerTransactionRoutes(router: Router): void {
     router.get("/transactions/:id", transactionController.getTransactionById);
     router.get("/transactions/user/:userId", transactionController.getTransactionsByUserId);
     router.post("/transactions", transactionController.createTransaction);
+    router.post("/transactions/bulk", transactionController.createTransactionsInBulk);
     router.put("/transactions", transactionController.updateTransaction);
+    router.put("/transactions/bulk", transactionController.updateTransactionsInBulk);
     router.delete("/transactions/:id", transactionController.deleteTransaction);
 }

@@ -52,12 +52,34 @@ export class TransactionController {
         }
     }
 
+    createTransactionsInBulk = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const transactionsDTO: CreateTransactionDTO[] = req.body;
+
+            const transactions = await this.transactionService.createTransactionsInBulk(transactionsDTO);
+            res.json(transactions);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     updateTransaction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const transactionDTO: UpdateTransactionDTO = req.body;
 
             const transaction = await this.transactionService.updateTransaction(transactionDTO);
             res.json(transaction);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    updateTransactionsInBulk = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const transactionsDTO: UpdateTransactionDTO[] = req.body;
+
+            const transactions = await this.transactionService.updateTransactionsInBulk(transactionsDTO);
+            res.json(transactions);
         } catch (error) {
             next(error);
         }
