@@ -30,6 +30,7 @@ export interface SavingGoal {
     name: string;
     targetAmount: number;
     currentAmount: number;
+    category?: string;
     dueDate: Date;
 }
 

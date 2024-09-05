@@ -9,6 +9,7 @@ import { TransactionRepository, TransactionRepositoryImpl } from "../repositorie
 import { TransactionService, TransactionServiceImpl } from "../services/transaction.service";
 import { TransactionController } from "../controllers/transaction.controller";
 import { SanitizationService, SanitizationServiceImpl } from "../services/sanitization.service";
+import { BudgetCalculatorService, BudgetCalculatorServiceImpl } from "../services/budgetcalculator.service";
 
 
 const container = new Container({ defaultScope: "Singleton" });
@@ -20,6 +21,7 @@ container.bind<UserController>(TYPES.UserController).to(UserController);
 container.bind<TransactionRepository>(TYPES.TransactionRepository).to(TransactionRepositoryImpl);
 container.bind<TransactionService>(TYPES.TransactionService).to(TransactionServiceImpl);
 container.bind<TransactionController>(TYPES.TransactionController).to(TransactionController);
+container.bind<BudgetCalculatorService>(TYPES.BudgetCalculatorService).to(BudgetCalculatorServiceImpl);
 
 // Utils
 container.bind<SanitizationService>(TYPES.SanitizationService).to(SanitizationServiceImpl);

@@ -66,6 +66,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s;
+    white-space: nowrap;
 
     &:hover {
         background-color: rgb(109, 28, 179);

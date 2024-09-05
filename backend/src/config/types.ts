@@ -1,4 +1,3 @@
-
 const TYPES = {
     JwtService: Symbol.for("JwtService"),
     SecurityService: Symbol.for("SecurityService"),
@@ -8,6 +7,7 @@ const TYPES = {
     TransactionRepository: Symbol.for("TransactionRepository"),
     TransactionService: Symbol.for("TransactionService"),
     TransactionController: Symbol.for("TransactionController"),
+    BudgetCalculatorService: Symbol.for("BudgetCalculatorService"),
 
     // Utils
     SanitizationService: Symbol.for("SanitizationService"),

@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { UserService } from "../services/user.service";
 import { JWTService } from "../services/jwt.service";
+import { BudgetCalculatorService } from "../services/budgetcalculator.service";
 import TYPES from "../config/types";
 import { Request, Response, NextFunction } from 'express';
 
@@ -9,7 +10,8 @@ export class UserController {
     
     constructor(
         @inject(TYPES.UserService) private userService: UserService,
-        @inject(TYPES.JwtService) private jwtService: JWTService
+        @inject(TYPES.JwtService) private jwtService: JWTService,
+        @inject(TYPES.BudgetCalculatorService) private budgetCalculatorService: BudgetCalculatorService
     ) {}
 
     getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -19,6 +21,7 @@ export class UserController {
             const user = await this.userService.getUserById(id);
             if (!user) {
                 res.status(404).send("User not found");
+                return;
             }
 
             res.json(user);
@@ -34,6 +37,7 @@ export class UserController {
             const user = await this.userService.getUserByEmail(email);
             if (!user) {
                 res.status(404).send("User not found");
+                return;
             }
 
             res.json(user);
@@ -51,6 +55,7 @@ export class UserController {
             const user = await this.userService.getUserById(userId);
             if (!user) {
                 res.status(404).send("User not found");
+                return;
             }
             
             res.json(user);
@@ -101,6 +106,23 @@ export class UserController {
             const user = await this.userService.updateUser(req.body);
             if (!user) {
                 res.status(404).send("User not found");
+                return;
+            }
+
+            res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    refreshUserBudget = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const id = req.params.id;
+
+            const user = await this.budgetCalculatorService.calculateFinancialData(id);
+            if (!user) {
+                res.status(404).send("User not found");
+                return;
             }
 
             res.json(user);
@@ -116,6 +138,7 @@ export class UserController {
             const user = await this.userService.deleteUser(id);
             if (!user) {
                 res.status(404).send("User not found");
+                return;
             }
 
             res.json(user);

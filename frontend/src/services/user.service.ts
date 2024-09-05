@@ -21,6 +21,13 @@ export default class UserService {
         return response.data;
     }
 
+    async refreshUserBudget(id: string): Promise<UserDetailsDTO> {
+        console.log("User id: ", id);
+        const response = await API.put(`${API_URL}/users/budget/refresh/${id}`, null);
+
+        return response.data;
+    }
+
     async deleteUser(id: string): Promise<UserDetailsDTO> {
         const response = await API.delete(`${API_URL}/users/${id}`);
 

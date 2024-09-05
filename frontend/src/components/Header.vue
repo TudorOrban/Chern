@@ -1,5 +1,5 @@
 <template>
-    <div class="header flex items-center justify-between w-full px-8 py-4 border-b border-gray-300 shadow-sm">
+    <div class="header flex items-center justify-between w-full px-8 py-4 space-x-4 border-b border-gray-300 shadow-sm overflow-x-hidden">
         <div>
             <h2 class="text-2xl font-semibold italic">Chern</h2>
         </div>
