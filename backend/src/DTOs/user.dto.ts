@@ -1,8 +1,25 @@
+import { DateBalance, SavingGoal, UserSettings } from "../models/user.model";
+
 export interface UserDetailsDTO {
     id: number;
     email: string;
     username: string;
     passwordHash?: string;
+
+    // Financial data:
+    defaultCurrency?: string;
+    currentBalance?: number;
+    monthlyIncome?: number;
+    currentMonthSpending?: number;
+    currentMonthBudget?: number;
+    currentMonthRemainingBudget?: number;
+    currentMonthUpcomingSpending?: number;
+    balanceHistory?: DateBalance[];
+
+    categories?: string[];
+    savingGoals?: SavingGoal[];
+
+    userSettings?: UserSettings;
 }
 
 export interface CreateUserDTO {
@@ -17,4 +34,18 @@ export interface UpdateUserDTO {
     email?: string;
     password?: string;
     username?: string;
+    
+    defaultCurrency?: string;
+    currentBalance?: number;
+    monthlyIncome?: number;
+    currentMonthSpending?: number;
+    currentMonthBudget?: number;
+    currentMonthRemainingBudget?: number;
+    currentMonthUpcomingSpending?: number;
+    balanceHistory?: DateBalance[];
+
+    categories?: string[];
+    savingGoals?: SavingGoal[];
+
+    userSettings?: UserSettings;
 }

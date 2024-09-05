@@ -15,6 +15,21 @@
     font-weight: 600;
 }
 
+.label-medium {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.label-medium-large {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.label-large {
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
 .custom-input {
     padding: 0.5rem 1rem;
     border: 1px solid #b4b4b4;
