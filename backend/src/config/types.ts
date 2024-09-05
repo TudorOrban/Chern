@@ -11,6 +11,7 @@ const TYPES = {
 
     // Utils
     SanitizationService: Symbol.for("SanitizationService"),
+    DTOMapperService: Symbol.for("DTOMapperService"),
 }
 
 export default TYPES;

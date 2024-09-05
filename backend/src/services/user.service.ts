@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 import { UserRepository } from "../repositories/user.repository";
+import { DTOMapperService } from "./dtomapper.service";
 import { IUser } from "../models/user.model";
 import TYPES from "../config/types";
 import { CreateUserDTO, UpdateUserDTO, UserDetailsDTO } from "../DTOs/user.dto";
@@ -18,7 +19,8 @@ export interface UserService {
 export class UserServiceImpl implements UserService {
 
     constructor(
-        @inject(TYPES.UserRepository) private userRepository: UserRepository
+        @inject(TYPES.UserRepository) private userRepository: UserRepository,
+        @inject(TYPES.DTOMapperService) private dtoMapperService: DTOMapperService,
     ) {}
 
     getUserById = async (id: string): Promise<UserDetailsDTO | null> => {
@@ -27,7 +29,7 @@ export class UserServiceImpl implements UserService {
                 if (!user) {
                     return null;
                 }
-                return this.mapUserToUserDetails(user);
+                return this.dtoMapperService.mapUserToUserDetails(user);
             });
     }
 
@@ -37,7 +39,7 @@ export class UserServiceImpl implements UserService {
                 if (!user) {
                     return null;
                 }
-                return this.mapUserToUserDetails(user);
+                return this.dtoMapperService.mapUserToUserDetails(user);
             });
     }
 
@@ -81,7 +83,7 @@ export class UserServiceImpl implements UserService {
                 if (!user) {
                     return null;
                 }
-                return this.mapUserToUserDetails(user);
+                return this.dtoMapperService.mapUserToUserDetails(user);
             });
     }
 
@@ -91,16 +93,8 @@ export class UserServiceImpl implements UserService {
                 if (!user) {
                     return null;
                 }
-                return this.mapUserToUserDetails(user);
+                return this.dtoMapperService.mapUserToUserDetails(user);
             });
     }
 
-    private mapUserToUserDetails(user: IUser): UserDetailsDTO {
-        return {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            passwordHash: user?.passwordHash
-        };
-    }
 }

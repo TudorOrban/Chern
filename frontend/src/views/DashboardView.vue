@@ -9,7 +9,7 @@
                 class="flex items-center standard-button"
             >
                 <font-awesome-icon icon="arrow-rotate-right" class="w-4 h-4 mr-2"/>
-                <span class="label-medium">Refresh Budget</span>
+                <span class="label-medium">Refresh</span>
             </button>
         </div>
 
@@ -28,18 +28,38 @@
                 </p>
             </div>
 
+            <div class="flex items-center py-2">
+                <h2 class="label-large text-gray-800">Current Month</h2>
+            </div>
+
             <div class="flex items-center space-x-20">
-                <div class="flex items-center space-x-2">
-                    <span class="label-medium-large">Current Month Spending: </span>
+                <div class="flex items-end space-x-2">
+                    <span class="label-medium-large">Spending: </span>
                     <p class="label-medium">
                         {{ formatMoneyAmount(user?.currentMonthSpending, user?.defaultCurrency) }}
                     </p>
                 </div>
                 
-                <div class="flex items-center space-x-2">
-                    <span class="label-medium-large">Current Month Budget: </span>
+                <div class="flex items-end space-x-2">
+                    <span class="label-medium-large">Budget: </span>
                     <p class="label-medium">
                         {{ formatMoneyAmount(user?.currentMonthBudget, user?.defaultCurrency) }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-20">
+                <div class="flex items-end space-x-2">
+                    <span class="label-medium-large">Upcoming Spending: </span>
+                    <p class="label-medium">
+                        {{ formatMoneyAmount(user?.currentMonthUpcomingSpending, user?.defaultCurrency) }}
+                    </p>
+                </div>
+                
+                <div class="flex items-end space-x-2">
+                    <span class="label-medium-large">Remaining Budget: </span>
+                    <p class="label-medium">
+                        {{ formatMoneyAmount(user?.currentMonthRemainingBudget, user?.defaultCurrency) }}
                     </p>
                 </div>
             </div>
@@ -67,9 +87,13 @@ export default class DashboardView extends Vue {
 
     formatMoneyAmount(amount: number | null, currency: string = 'USD'): string {
         if (typeof amount === 'number') {
-            return `${currency} ${amount.toFixed(2)}`;
+            return `${this.formatCurrency(currency)} ${amount.toFixed(2)}`;
         }
         return '-';
+    }
+
+    formatCurrency(currency: string): string {
+        return currency === 'USD' ? '$' : currency;
     }
 
     async refreshBudget() {

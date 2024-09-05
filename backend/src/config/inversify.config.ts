@@ -10,6 +10,7 @@ import { TransactionService, TransactionServiceImpl } from "../services/transact
 import { TransactionController } from "../controllers/transaction.controller";
 import { SanitizationService, SanitizationServiceImpl } from "../services/sanitization.service";
 import { BudgetCalculatorService, BudgetCalculatorServiceImpl } from "../services/budgetcalculator.service";
+import { DTOMapperService, DTOMapperServiceImpl } from "../services/dtomapper.service";
 
 
 const container = new Container({ defaultScope: "Singleton" });
@@ -25,5 +26,6 @@ container.bind<BudgetCalculatorService>(TYPES.BudgetCalculatorService).to(Budget
 
 // Utils
 container.bind<SanitizationService>(TYPES.SanitizationService).to(SanitizationServiceImpl);
+container.bind<DTOMapperService>(TYPES.DTOMapperService).to(DTOMapperServiceImpl);
 
 export default container;

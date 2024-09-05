@@ -3,6 +3,9 @@ import { UserDetailsDTO } from "../DTOs/user.dto";
 import TYPES from "../config/types";
 import { UserRepository } from "../repositories/user.repository";
 import { TransactionRepository } from "../repositories/transaction.repository";
+import { DTOMapperService } from "./dtomapper.service";
+import { ITransaction } from "../models/transaction.model";
+import { IUser } from "../models/user.model";
 
 export interface BudgetCalculatorService {
     calculateFinancialData(userId: string): Promise<UserDetailsDTO | null>;
@@ -13,7 +16,8 @@ export class BudgetCalculatorServiceImpl implements BudgetCalculatorService {
     
     constructor(
         @inject(TYPES.UserRepository) private userRepository: UserRepository,
-        @inject(TYPES.TransactionRepository) private transactionRepository: TransactionRepository
+        @inject(TYPES.TransactionRepository) private transactionRepository: TransactionRepository,
+        @inject(TYPES.DTOMapperService) private dtoMapperService: DTOMapperService,
     ) {}
     
     async calculateFinancialData(userId: string): Promise<UserDetailsDTO | null> {
@@ -24,6 +28,14 @@ export class BudgetCalculatorServiceImpl implements BudgetCalculatorService {
 
         const userTransactions = await this.transactionRepository.findTransactionsByUserId(userId);
 
+        const updatedUser = await this.calculateBudget(user, userTransactions);
+
+        this.userRepository.updateUser(this.dtoMapperService.mapUserToUpdateUserDTO(updatedUser));
+
+        return this.dtoMapperService.mapUserToUserDetails(user);
+    }
+
+    private async calculateBudget(user: IUser, userTransactions: ITransaction[]): Promise<IUser> {
         let currentMonthSpending = 0;
 
         const userExpenses = userTransactions.filter(transaction => transaction.type === 'Expense');
@@ -48,9 +60,6 @@ export class BudgetCalculatorServiceImpl implements BudgetCalculatorService {
         });
 
         user.currentMonthUpcomingSpending = currentMonthUpcomingExpenses.reduce((acc, transaction) => acc + transaction.amount, 0);
-
-        this.userRepository.updateUser(user);
-
 
         return user;
     }
