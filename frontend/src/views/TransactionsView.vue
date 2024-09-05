@@ -11,7 +11,7 @@
                     class="standard-delete-button"
                     @click="openDeleteDialog"
                 >
-                    <font-awesome-icon icon="trash" />
+                    <font-awesome-icon icon="trash" class="w-4 h-4"/>
                 </button>
 
                 <!-- Edit -->
@@ -20,7 +20,7 @@
                     class="flex items-center standard-write-button"
                     @click="editTransactions"
                 >
-                    <font-awesome-icon icon="edit" class="mr-2" />
+                    <font-awesome-icon icon="edit" class="w-4 h-4 mr-2" />
                     <span>Edit</span>
                 </button>   
 
@@ -29,7 +29,7 @@
                     class="flex items-center standard-button"
                     @click="cancelEditingTransactions"
                 >
-                    <font-awesome-icon icon="times" class="mr-2" />
+                    <font-awesome-icon icon="times" class="w-4 h-4 mr-2" />
                     <span>Cancel</span>
                 </button>
 
@@ -38,7 +38,7 @@
                     class="flex items-center standard-write-button"
                     @click="saveEditedTransactions"
                 >
-                    <font-awesome-icon icon="save" class="mr-2" />
+                    <font-awesome-icon icon="save" class="w-4 h-4 mr-2" />
                     <span>Save</span>
                 </button>
 
@@ -48,7 +48,7 @@
                     class="flex items-center standard-button"
                     @click="cancelCreatingTransactions"
                 >
-                    <font-awesome-icon icon="times" class="mr-2" />
+                    <font-awesome-icon icon="times" class="w-4 h-4 mr-2" />
                     <span>Cancel</span>
                 </button>
                 
@@ -57,7 +57,7 @@
                     class="flex items-center standard-write-button"
                     @click="createTransactionsInBulk"
                 >
-                    <font-awesome-icon icon="save" class="mr-2" />
+                    <font-awesome-icon icon="save" class="w-4 h-4 mr-2" />
                     <span>Save</span>
                 </button>
 
@@ -66,7 +66,7 @@
                     class="flex items-center standard-write-button"
                     @click="addTemporaryTransaction"
                 >
-                    <font-awesome-icon icon="plus" class="mr-2" />
+                    <font-awesome-icon icon="plus" class="w-4 h-4 mr-2" />
                     <span>Add</span>
                 </button>
             </div>

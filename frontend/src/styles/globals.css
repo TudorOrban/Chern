@@ -13,3 +13,13 @@
     text-align: center;
     color: #2c3e50;
 }
+
+:root {
+    --main-color: #0065d2;
+
+}
+
+.header {
+    background-color: var(--main-color);
+    color: white;
+}
