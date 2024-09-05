@@ -2,7 +2,8 @@ export interface TransactionDetailsDTO {
     id: string;
     userId: string;
     amount: number;
-    type?: string;
+    type?: "Income" | "Expense";
+    category?: string;
     date?: Date;
     isRecurrent?: boolean;
 
@@ -14,7 +15,8 @@ export interface TransactionDetailsDTO {
 export interface CreateTransactionDTO {
     userId: string;
     amount: number;
-    type?: string;
+    type?: "Income" | "Expense";
+    category?: string;
     date?: Date;
     isRecurrent?: boolean;
 
@@ -27,7 +29,8 @@ export interface CreateTransactionDTO {
 export interface UpdateTransactionDTO {
     id: string;
     amount: number;
-    type?: string;
+    type?: "Income" | "Expense";
+    category?: string;
     date?: Date;
     isRecurrent?: boolean;
     

@@ -5,7 +5,8 @@ export interface ITransaction extends Document {
     userId: mongoose.Types.ObjectId;
     user?: IUser;
     amount: number;
-    type?: string;
+    type?: "Income" | "Expense";
+    category?: string;
     date?: Date;
     isRecurrent?: boolean;
 }
@@ -13,7 +14,8 @@ export interface ITransaction extends Document {
 const TransactionSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
     amount: { type: Number, required: true },
-    type: { type: String },
+    type: { type: String, enum: ['Income', 'Expense'], default: 'Expense' },
+    category: { type: String },
     date: { type: Date, default: Date.now },
     isRecurrent: { type: Boolean, default: false },
 });

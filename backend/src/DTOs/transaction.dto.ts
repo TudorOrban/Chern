@@ -4,7 +4,8 @@ export interface TransactionDetailsDTO {
     id: string;
     userId: mongoose.Types.ObjectId;
     amount: number;
-    type?: string;
+    type?: "Income" | "Expense";
+    category?: string;
     date?: Date;
     isRecurrent?: boolean;
 }
@@ -12,7 +13,8 @@ export interface TransactionDetailsDTO {
 export interface CreateTransactionDTO {
     userId: mongoose.Types.ObjectId;
     amount: number;
-    type?: string;
+    type?: "Income" | "Expense";
+    category?: string;
     date?: Date;
     isRecurrent?: boolean;
 }
@@ -20,7 +22,8 @@ export interface CreateTransactionDTO {
 export interface UpdateTransactionDTO {
     id: string;
     amount: number;
-    type?: string;
+    type?: "Income" | "Expense";
+    category?: string;
     date?: Date;
     isRecurrent?: boolean;
 }

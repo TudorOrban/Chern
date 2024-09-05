@@ -12,10 +12,10 @@
             <router-link to="/reports">Reports</router-link>
         </nav>
 
-        <div>
-            <input type="text" placeholder="Search" class="custom-input" />
-            <button class="search-button">
-                <i class="fas fa-search"></i>
+        <div class="flex items-center">
+            <input type="text" placeholder="Search" class="custom-input rounded-r-none" />
+            <button class="search-button rounded-l-none">
+                <font-awesome-icon icon="search" class="w-4 h-4"/>
             </button>
         </div>
 
