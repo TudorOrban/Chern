@@ -1,31 +1,42 @@
 <template>
     <div class="page-standard-horizontal-padding py-4 relative">
-        <div class="flex items-center justify-between w-full">
-            <h1 class="page-title py-4">Dashboard</h1>
+        <div class="flex items-center justify-between w-full py-6">
+            <h1 class="page-title">Dashboard</h1>
 
-            <button
-                v-if="isAuthenticated"
-                @click="refreshBudget"
-                class="flex items-center standard-button"
-            >
-                <font-awesome-icon icon="arrow-rotate-right" class="w-4 h-4 mr-2"/>
-                <span class="label-medium">Refresh</span>
-            </button>
+            <div class="flex items-center space-x-2">
+                <button
+                    v-if="isAuthenticated"
+                    @click="refreshBudget"
+                    class="flex items-center standard-button"
+                >
+                    <font-awesome-icon icon="arrow-rotate-right" class="w-4 h-4 mr-2"/>
+                    <span class="label-medium">Refresh</span>
+                </button>
+
+                <button
+                    v-if="isAuthenticated"
+                    @click="editDetails"
+                    class="flex items-center standard-write-button"
+                >
+                    <font-awesome-icon icon="edit" class="w-4 h-4 mr-2"/>
+                    <span class="label-medium">Edit</span>
+                </button>
+            </div>
         </div>
 
         <div class="space-y-4">
             <div class="flex items-center space-x-2">
                 <span class="label-medium-large">Current Balance: </span>
-                <p class="label-medium">
+                <span class="label-medium">
                     {{ formatMoneyAmount(user?.currentBalance, user?.defaultCurrency) }}
-                </p>
+                </span>
             </div>
             
             <div class="flex items-center space-x-2">
                 <span class="label-medium-large">Monthly Income: </span>
-                <p class="label-medium">
+                <span class="label-medium">
                     {{ formatMoneyAmount(user?.monthlyIncome, user?.defaultCurrency) }}
-                </p>
+                </span>
             </div>
 
             <div class="flex items-center py-2">
@@ -35,32 +46,32 @@
             <div class="flex items-center space-x-20">
                 <div class="flex items-end space-x-2">
                     <span class="label-medium-large">Spending: </span>
-                    <p class="label-medium">
+                    <span class="label-medium">
                         {{ formatMoneyAmount(user?.currentMonthSpending, user?.defaultCurrency) }}
-                    </p>
+                    </span>
                 </div>
                 
                 <div class="flex items-end space-x-2">
-                    <span class="label-medium-large">Budget: </span>
-                    <p class="label-medium">
-                        {{ formatMoneyAmount(user?.currentMonthBudget, user?.defaultCurrency) }}
-                    </p>
+                    <span class="label-medium-large">Upcoming Spending: </span>
+                    <span class="label-medium">
+                        {{ formatMoneyAmount(user?.currentMonthUpcomingSpending, user?.defaultCurrency) }}
+                    </span>
                 </div>
             </div>
 
             <div class="flex items-center space-x-20">
                 <div class="flex items-end space-x-2">
-                    <span class="label-medium-large">Upcoming Spending: </span>
-                    <p class="label-medium">
-                        {{ formatMoneyAmount(user?.currentMonthUpcomingSpending, user?.defaultCurrency) }}
-                    </p>
+                    <span class="label-medium-large">Budget: </span>
+                    <span class="label-medium">
+                        {{ formatMoneyAmount(user?.currentMonthBudget, user?.defaultCurrency) }}
+                    </span>
                 </div>
-                
+
                 <div class="flex items-end space-x-2">
                     <span class="label-medium-large">Remaining Budget: </span>
-                    <p class="label-medium">
+                    <span class="label-medium">
                         {{ formatMoneyAmount(user?.currentMonthRemainingBudget, user?.defaultCurrency) }}
-                    </p>
+                    </span>
                 </div>
             </div>
         </div>
@@ -106,6 +117,10 @@ export default class DashboardView extends Vue {
         if (user) {
             this.$store.commit('setUser', user);
         }
+    }
+
+    editDetails() {
+        this.$router.push("/edit-user-details");
     }
 }
 </script>

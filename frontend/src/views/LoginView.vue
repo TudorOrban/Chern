@@ -4,7 +4,7 @@
             <h2 class="text-xl font-semibold">Login</h2>
         </div>
         
-        <form @submit.prevent="handleSubmit" class="form-container" space-y-4>
+        <form @submit.prevent="handleSubmit" class="form-container">
             <div class="text-left">
                 <label for="email" class="form-label">Email:</label>
                 <input id="email" v-model="email" @blur="validateEmail" class="form-input" />
