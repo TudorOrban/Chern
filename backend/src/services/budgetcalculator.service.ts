@@ -7,6 +7,7 @@ import { DTOMapperService } from "./dtomapper.service";
 import { ITransaction } from "../models/transaction.model";
 import { IUser } from "../models/user.model";
 
+// Service for computing user financial data from transactions list
 export interface BudgetCalculatorService {
     calculateFinancialData(userId: string): Promise<UserDetailsDTO | null>;
 }
