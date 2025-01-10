@@ -92,6 +92,7 @@ export default class HeaderComponent extends Vue {
 
     async logout() {
         try {
+            // Dispatch logout and redirect to login page
             await this.$store.dispatch('logout');
             this.$router.replace('/login');
         } catch (error) {
